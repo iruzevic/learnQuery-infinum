@@ -17,7 +17,7 @@ describe('cssProp', function() {
     // code goes here
 
     var selector = '#toddler';
-    var property = 'font-size';
+    var property = 'fontSize';
     var value = '50px';
 
     cssProp(selector, property, value);
