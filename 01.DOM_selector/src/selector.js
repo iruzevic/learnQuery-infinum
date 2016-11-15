@@ -1,22 +1,16 @@
 var domSelector = function(selectors) {
   'use strict';
 
+  function getHtmlSelector(selectors) {
 
-  function toArray(nl) {
-      for(var a=[], l=nl.length; l--; a[l]=nl[l]);
-      return a;
+    try {
+      var selectedElement = document.querySelectorAll(selectors);
+      var selectedElementArray = Array.prototype.slice.call(selectedElement);
+      return selectedElementArray;
+    } catch (e) {
+      throw new Error('Invalid or non existing selector');
+    }
   }
 
-
-  function getHtmlSelector(selectors){
-
-    var selector = document.querySelectorAll(selectors);
-
-    return toArray(selector);
-
-  }
-
-  return {
-    htmlElement : getHtmlSelector(selectors)
-  }
+  return getHtmlSelector(selectors)
 };
