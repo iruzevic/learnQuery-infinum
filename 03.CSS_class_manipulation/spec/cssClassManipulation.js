@@ -15,12 +15,11 @@ describe('CssClassManipulation', function() {
   it('should add a css class to the element', function() {
     // code goes here
 
-    var selector = '#toddler';
     var className = 'test';
 
-    cssClass.add(selector, className);
+    expect($selectedElement.hasClass(className)).toBe(false);
 
-    console.log($selectedElement.hasClass(className));
+    cssClass.add(selectedElement, className);
 
     expect($selectedElement.hasClass(className)).toBe(true);
 
@@ -28,12 +27,15 @@ describe('CssClassManipulation', function() {
 
   it('should not overwrite existing css classes', function() {
     // code goes here
-    var selector = '#toddler';
+
     var classNameFirst = 'test';
     var classNameSecond = 'another_test';
 
-    cssClass.add(selector, classNameFirst);
-    cssClass.add(selector, classNameSecond);
+    cssClass.add(selectedElement, classNameFirst);
+
+    expect($selectedElement.hasClass(classNameFirst)).toBe(true);
+
+    cssClass.add(selectedElement, classNameSecond);
 
     expect($selectedElement.hasClass(classNameFirst)).toBe(true);
     expect($selectedElement.hasClass(classNameSecond)).toBe(true);
@@ -42,17 +44,53 @@ describe('CssClassManipulation', function() {
 
   it('should remove a specific css class of the element', function() {
     // code goes here
+
+    var className = 'test';
+
+    cssClass.add(selectedElement, className);
+
+    expect($selectedElement.hasClass(className)).toBe(true);
+
+    cssClass.remove(selectedElement, className);
+
+    expect($selectedElement.hasClass(className)).toBe(false);
+
   });
 
   it('should toggle a css class of the element', function() {
     // code goes here
+
+    var className = 'test';
+
+    expect($selectedElement.hasClass(className)).toBe(false);
+
+    cssClass.toggle(selectedElement, className);
+
+    expect($selectedElement.hasClass(className)).toBe(true);
+
   });
 
   it('should return true if a HTML element has a given css class', function() {
     // code goes here
+
+    var className = 'test';
+
+    cssClass.add(selectedElement, className);
+
+    var hasClass = cssClass.has(selectedElement, className);
+
+    expect(hasClass).toBe(true);
+
   });
 
   it('should return false if a HTML element doesn\'t have a given css class', function() {
     // code goes here
+
+    var className = 'test';
+
+    var hasClass = cssClass.has(selectedElement, className);
+
+    expect(hasClass).toBe(false);
+
   });
 });
