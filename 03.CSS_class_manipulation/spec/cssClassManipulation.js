@@ -14,10 +14,30 @@ describe('CssClassManipulation', function() {
 
   it('should add a css class to the element', function() {
     // code goes here
+
+    var selector = '#toddler';
+    var className = 'test';
+
+    cssClass.add(selector, className);
+
+    console.log($selectedElement.hasClass(className));
+
+    expect($selectedElement.hasClass(className)).toBe(true);
+
   });
 
   it('should not overwrite existing css classes', function() {
     // code goes here
+    var selector = '#toddler';
+    var classNameFirst = 'test';
+    var classNameSecond = 'another_test';
+
+    cssClass.add(selector, classNameFirst);
+    cssClass.add(selector, classNameSecond);
+
+    expect($selectedElement.hasClass(classNameFirst)).toBe(true);
+    expect($selectedElement.hasClass(classNameSecond)).toBe(true);
+
   });
 
   it('should remove a specific css class of the element', function() {
