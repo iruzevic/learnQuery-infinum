@@ -17,7 +17,18 @@ function cssProp( htmlElement, cssProperty, value ) {
 
     } else {
 
-      el = getStylePropertyValue(htmlElement, cssProperty);
+      if(typeof cssProperty !== 'undefined') {
+
+        //get property value
+        el = getStylePropertyValue(htmlElement, cssProperty);
+
+      } else {
+
+        //if no property provider, return all style on element
+        el = el[0].style.cssText;
+
+      }
+
 
     }
   }
@@ -27,14 +38,14 @@ function cssProp( htmlElement, cssProperty, value ) {
   //set values from object to style property
   function setStyleObject( htmlElement, propertyObject ) {
 
-   var el = getHtmlSelector( htmlElement )[0];
-   var prop = '';
+    var el = getHtmlSelector( htmlElement )[0];
+    var prop = '';
 
-   for (prop in propertyObject) {
-      if (propertyObject.hasOwnProperty(prop)) {
-        el.style[prop] = propertyObject[prop];
-      }
-    }
+    for (prop in propertyObject) {
+       if (propertyObject.hasOwnProperty(prop)) {
+         el.style[prop] = propertyObject[prop];
+       }
+     }
   }
 
   //get style value from property key
