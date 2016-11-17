@@ -25,14 +25,16 @@ describe('domManipulation', function() {
 
     expect($selectedElement.find('p')[0]).toBeUndefined();
 
-    domSelector.append(selectedElement, 'p');
+    console.log(selectedElement, $selectedElement);
+
+    // domSelector.append(selectedElement, 'p');
+    console.log(selectedElement, $selectedElement);
 
     expect($selectedElement.find('p')[0]).not.toBeUndefined();
 
   });
 
   it('should prepend a HTML element to the given element', function() {
-    // code goes here
 
     expect($selectedElement.find('p')[0]).toBeUndefined();
 
@@ -42,26 +44,36 @@ describe('domManipulation', function() {
   });
 
   it('should be able to add a new HTML element after a given HTML element', function() {
-    // code goes here
+
+    domSelector.after(selectedElement, 'p');
   });
 
   it('should be able to add a new HTML element before a given HTML element', function() {
-    // code goes here
+
+    domSelector.before(selectedElement, 'p');
   });
 
   it('should return a value of a given HTML non-select element', function() {
-    // code goes here
+
+    domSelector.val(selectedElement);
   });
 
-  it('should return a value of a given select HTML element', function(){
-    // code goes here
+  it('should return a value of a given select HTML element', function(){    // code goes here
+
+    domSelector.val(selectedElement);
   });
 
   it('should not throw exception if the target element is not in the DOM when calling dom.remove', function() {
-    // code goes here
+
+    selectedElement = 'p';
+
+    expect(function() {domSelector.remove(selectedElement)}).toThrowError('Invalid or non existing element');
+
   });
 
   it('should not throw exception if the target element is not in the DOM when calling dom.after', function() {
-    // code goes here
+
+    expect(function() {domSelector.after(selectedElement, 'p')}).toThrowError('Invalid or non existing element');
+
   });
 });
