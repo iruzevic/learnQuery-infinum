@@ -45,16 +45,17 @@ describe('cssProp', function() {
 
   it('should properly set CSS properties if called multiple times on different HTML elements', function() {
 
-    var property = 'color';
+    var property = 'fontSize';
     var $anotherSelectedElement = $('.learn-query-testing');
     var anotherSelectedElement = $anotherSelectedElement[0];
 
-    cssProp(selectedElement, property, 'red');
-    cssProp(anotherSelectedElement, property, 'red');
-    cssProp(anotherSelectedElement, property, 'blue');
+    cssProp( selectedElement, property, 0);
 
+    cssProp(selectedElement, property, '20px');
+    cssProp(anotherSelectedElement, property, '20px');
+    cssProp(anotherSelectedElement, property, '40px');
 
-    expect($selectedElement.css(property)).toEqual(cssProp(selectedElement, property));
-    expect($anotherSelectedElement.css(property)).toEqual(cssProp(anotherSelectedElement, property));
-  }); 
+    expect($selectedElement.css(property)).toEqual('20px');
+    expect($anotherSelectedElement.css(property)).toEqual('40px');
+  });
 });

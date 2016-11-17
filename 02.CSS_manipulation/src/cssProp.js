@@ -1,39 +1,7 @@
 function cssProp( htmlElement, cssProperty, value ) {
   'use strict';
+
   var el = '';
-
-  //check if object or property was passed as argument
-  if( typeof cssProperty === 'object') {
-    setStyleObject( htmlElement, cssProperty );
-  }else{
-
-    var cssPropertyObject = new Object();
-    cssPropertyObject[cssProperty] = value
-
-    //check if value isset
-    if(typeof value !== 'undefined') {
-
-      setStyleObject( htmlElement, cssPropertyObject );
-
-    } else {
-
-      if(typeof cssProperty !== 'undefined') {
-
-        //get property value
-        el = window.getComputedStyle(htmlElement, null).getPropertyValue(cssProperty);
-
-      } else {
-
-        //if no property provider, return all style on element
-        el = htmlElement.style.cssText;
-
-      }
-
-
-    }
-  }
-
-  return el;
 
   //set values from object to style property
   function setStyleObject( htmlElement, propertyObject ) {
@@ -45,5 +13,45 @@ function cssProp( htmlElement, cssProperty, value ) {
          htmlElement.style[prop] = propertyObject[prop];
        }
      }
+  }
+
+  function getPropertyValue(htmlElement, cssProperty){
+    return window.getComputedStyle(htmlElement, null).getPropertyValue(cssProperty);
+  }
+
+  function getAllElementStyles(htmlElement){
+    return htmlElement.style.cssText
+  }
+
+  if(!htmlElement){
+    throw new Error('HTML Element not provided');
+  }
+
+  //check if object or property was passed as argument
+  if( typeof cssProperty === 'object') {
+
+    setStyleObject( htmlElement, cssProperty );
+
+  }else{
+
+    var cssPropertyObject = {};
+    cssPropertyObject[cssProperty] = value
+
+    if(value) {
+
+      setStyleObject( htmlElement, cssPropertyObject );
+
+    } else {
+
+      if(cssProperty) {
+
+        return getPropertyValue(htmlElement, cssProperty)
+
+      } else {
+
+        return getAllElementStyles(htmlElement);
+
+      }
+    }
   }
 }
