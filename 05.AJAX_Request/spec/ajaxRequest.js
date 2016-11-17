@@ -6,7 +6,7 @@ describe('AjaxRequest', function() {
   beforeEach(function() {
     jasmine.Ajax.install();
 
-    this.onSuccessSpy = jasmine.createSpy('success');
+    this.onSuccessSpy = jasmine.createSpy('successs');
     this.onFailureSpy = jasmine.createSpy('failure');
     this.onCompleteSpy = jasmine.createSpy('complete');
 
@@ -33,7 +33,17 @@ describe('AjaxRequest', function() {
   });
 
   it('should make POST ajax request', function() {
-    // code goes here
+    var test= ajaxReq('/infinum/index', {
+      method: 'POST',
+      success: this.onSuccessSpy,
+      complete: this.onCompleteSpy,
+      failure: this.onFailureSpy
+    });
+
+    expect(jasmine.Ajax.requests.mostRecent().method).toBe('POST');
+    expect(this.onSuccessSpy).toHaveBeenCalled();
+    expect(this.onFailureSpy).not.toHaveBeenCalled();
+    expect(this.onCompleteSpy).toHaveBeenCalled();
   });
 
   it('should call a custom function with proper context on failure', function() {
