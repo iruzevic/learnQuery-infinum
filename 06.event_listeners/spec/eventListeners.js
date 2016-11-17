@@ -12,10 +12,15 @@ describe('EventListeners', function() {
     methods = {
       showLove: function() {
         console.log('<3 JavaScript <3');
+      },
+      moreLove: function() {
+        console.log('JS More love');
+        return 'JS More love';
       }
     };
 
     spyOn(methods, 'showLove');
+    spyOn(methods, 'moreLove');
 
     $selectedElement = $('#toddler');
     selectedElement = $selectedElement[0];
@@ -30,16 +35,33 @@ describe('EventListeners', function() {
   });
 
   it('should be able to add the same event+callback two times to an HTML element', function() {
-    // code goes here
+    eventListener.on(selectedElement, 'click', methods.showLove);
+    eventListener.on(selectedElement, 'click', methods.showLove);
+
+    $selectedElement.click();
+
+    expect(methods.showLove.calls.count()).toEqual(2);
   });
 
 
   it('should be able to add the same callback for two different events to an HTML element', function() {
-    // code goes here
+    eventListener.on(selectedElement, 'click', methods.showLove);
+    eventListener.on(selectedElement, 'hover', methods.showLove);
+
+    $selectedElement.click();
+    $selectedElement.hover();
+
+    expect(methods.showLove.calls.count()).toEqual(2);
   });
 
   it('should be able to add two different callbacks for same event to an HTML element', function() {
-    // code goes here
+    eventListener.on(selectedElement, 'click', methods.showLove);
+    eventListener.on(selectedElement, 'click', methods.moreLove);
+
+    $selectedElement.click();
+
+    expect(methods.showLove.calls.count()).toEqual(1);
+    expect(methods.moreLove.calls.count()).toEqual(1);
   });
 
   it('should be able to remove one event handler of an HTML element', function() {
