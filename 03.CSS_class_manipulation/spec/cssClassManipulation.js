@@ -13,7 +13,6 @@ describe('CssClassManipulation', function() {
   });
 
   it('should add a css class to the element', function() {
-    // code goes here
 
     var className = 'test';
 
@@ -26,7 +25,6 @@ describe('CssClassManipulation', function() {
   });
 
   it('should not overwrite existing css classes', function() {
-    // code goes here
 
     var classNameFirst = 'test';
     var classNameSecond = 'another_test';
@@ -43,11 +41,10 @@ describe('CssClassManipulation', function() {
   });
 
   it('should remove a specific css class of the element', function() {
-    // code goes here
 
     var className = 'test';
 
-    cssClass.add(selectedElement, className);
+    $selectedElement.addClass(className);
 
     expect($selectedElement.hasClass(className)).toBe(true);
 
@@ -58,7 +55,6 @@ describe('CssClassManipulation', function() {
   });
 
   it('should toggle a css class of the element', function() {
-    // code goes here
 
     var className = 'test';
 
@@ -71,11 +67,10 @@ describe('CssClassManipulation', function() {
   });
 
   it('should return true if a HTML element has a given css class', function() {
-    // code goes here
 
     var className = 'test';
 
-    cssClass.add(selectedElement, className);
+    $selectedElement.addClass(className);
 
     var hasClass = cssClass.has(selectedElement, className);
 
@@ -84,7 +79,6 @@ describe('CssClassManipulation', function() {
   });
 
   it('should return false if a HTML element doesn\'t have a given css class', function() {
-    // code goes here
 
     var className = 'test';
 
