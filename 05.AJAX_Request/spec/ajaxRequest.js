@@ -47,14 +47,91 @@ describe('AjaxRequest', function() {
   });
 
   it('should call a custom function with proper context on failure', function() {
-    // code goes here
+
+    var context = {
+      newContext: 'Test'
+    };
+
+    var onFailure = function(xhr, status, responseText) {
+      expect(status).toBe(null);
+      expect(responseText).toBe('failure');
+      expect(this).toBe(context);
+      expect(this.newContext).toBe('Test');
+    };
+
+    var methods = {
+     onFailure: onFailure
+    };
+
+    spyOn(methods, 'onFailure').and.callFake(onFailure);
+
+    ajaxReq('/infinum/notfound', {
+     success: this.onSuccessSpy,
+     failure: methods.onFailure,
+     complete: this.onCompleteSpy,
+     context: context
+    });
+
+    expect(methods.onFailure).toHaveBeenCalled();
+    expect(this.onCompleteSpy).toHaveBeenCalled();
+    expect(this.onSuccessSpy).not.toHaveBeenCalled();
+
   });
 
   it('should call a custom function with proper context on success', function() {
-    // code goes here
+    var context = {
+      newContext: 'Test'
+    };
+
+    var onSuccess = function(data, status, xhr) {
+      expect(status).toBe(200);
+      expect(data.response).toBe('incredible cool things');
+      expect(this).toBe(context);
+      expect(this.newContext).toBe('Test');
+    };
+
+    var methods = {
+     onSuccess: onSuccess
+    };
+
+    spyOn(methods, 'onSuccess').and.callFake(onSuccess);
+
+    ajaxReq('/infinum/index', {
+     success: methods.onSuccess,
+     failure: this.onFailureSpy,
+     complete: this.onCompleteSpy,
+     context: context
+    });
+
+    expect(methods.onSuccess).toHaveBeenCalled();
+    expect(this.onCompleteSpy).toHaveBeenCalled();
+    expect(this.onFailureSpy).not.toHaveBeenCalled();
   });
 
   it('should call a custom function with proper context when request is completed', function() {
-    // code goes here
+
+    var context = {
+      newContext: 'Test'
+    };
+
+    var onComplete = function() {
+      expect(this).toBe(context);
+      expect(this.newContext).toBe('Test');
+    };
+
+    var methods = {
+     onComplete: onComplete
+    };
+
+    spyOn(methods, 'onComplete').and.callFake(onComplete);
+
+    ajaxReq('/infinum/index', {
+     success: methods.onComplete,
+     failure: this.onFailureSpy,
+     complete: this.onCompleteSpy,
+     context: context
+    });
+
+    expect(methods.onComplete).toHaveBeenCalled();
   });
 });
