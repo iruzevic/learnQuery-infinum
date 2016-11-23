@@ -1,57 +1,54 @@
-function cssProp( htmlElement, cssProperty, value ) {
+function cssProp(htmlElement, cssProperty, value) {
   'use strict';
 
-  var el = '';
-
-  //set values from object to style property
-  function setStyleObject( htmlElement, propertyObject ) {
+  // set values from object to style property
+  function setStyleObject(element, propertyObject) {
 
     var prop = '';
 
     for (prop in propertyObject) {
-       if (propertyObject.hasOwnProperty(prop)) {
-         htmlElement.style[prop] = propertyObject[prop];
-       }
-     }
+      if (propertyObject.hasOwnProperty(prop)) {
+        element.style[prop] = propertyObject[prop];
+      }
+    }
   }
 
-  function getPropertyValue(htmlElement, cssProperty){
-    return window.getComputedStyle(htmlElement, null).getPropertyValue(cssProperty);
+  function getPropertyValue(element, cssPropertyValue) {
+    return window.getComputedStyle(element, null).getPropertyValue(
+      cssPropertyValue);
   }
 
-  function getAllElementStyles(htmlElement){
-    return htmlElement.style.cssText
+  function getAllElementStyles(element) {
+    return element.style.cssText;
   }
 
-  if(!htmlElement){
+  if (!htmlElement) {
     throw new Error('HTML Element not provided');
   }
 
-  //check if object or property was passed as argument
-  if( typeof cssProperty === 'object') {
+  // check if object or property was passed as argument
+  if (typeof cssProperty === 'object') {
 
-    setStyleObject( htmlElement, cssProperty );
+    setStyleObject(htmlElement, cssProperty);
 
-  }else{
+  } else {
 
     var cssPropertyObject = {};
-    cssPropertyObject[cssProperty] = value
+    cssPropertyObject[cssProperty] = value;
 
-    if(value) {
+    if (value) {
 
-      setStyleObject( htmlElement, cssPropertyObject );
+      setStyleObject(htmlElement, cssPropertyObject);
+
+    } else if (cssProperty) {
+
+      return getPropertyValue(htmlElement, cssProperty);
 
     } else {
 
-      if(cssProperty) {
+      return getAllElementStyles(htmlElement);
 
-        return getPropertyValue(htmlElement, cssProperty)
-
-      } else {
-
-        return getAllElementStyles(htmlElement);
-
-      }
     }
+
   }
 }
