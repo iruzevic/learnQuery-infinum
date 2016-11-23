@@ -6,7 +6,9 @@ describe('CssClassManipulation', function() {
   var $selectedElement, selectedElement;
 
   beforeEach(function() {
-    affix('.learn-query-testing #toddler .hidden.toy+h1[class="title"]+span[class="subtitle"]+span[class="subtitle"]+input[name="toyName"][value="cuddle bunny"]+input[class="creature"][value="unicorn"]+.hidden+.infinum[value="awesome cool"]');
+    affix(
+      '.learn-query-testing #toddler .hidden.toy+h1[class="title"]+span[class="subtitle"]+span[class="subtitle"]+input[name="toyName"][value="cuddle bunny"]+input[class="creature"][value="unicorn"]+.hidden+.infinum[value="awesome cool"]'
+    );
 
     $selectedElement = $('#toddler');
     selectedElement = $selectedElement[0];
@@ -29,7 +31,7 @@ describe('CssClassManipulation', function() {
     var classNameFirst = 'test';
     var classNameSecond = 'another_test';
 
-    cssClass.add(selectedElement, classNameFirst);
+    $selectedElement.addClass(classNameFirst);
 
     expect($selectedElement.hasClass(classNameFirst)).toBe(true);
 
@@ -64,6 +66,10 @@ describe('CssClassManipulation', function() {
 
     expect($selectedElement.hasClass(className)).toBe(true);
 
+    cssClass.toggle(selectedElement, className);
+
+    expect($selectedElement.hasClass(className)).toBe(false);
+
   });
 
   it('should return true if a HTML element has a given css class', function() {
@@ -78,13 +84,15 @@ describe('CssClassManipulation', function() {
 
   });
 
-  it('should return false if a HTML element doesn\'t have a given css class', function() {
+  it(
+    'should return false if a HTML element doesn\'t have a given css class',
+    function() {
 
-    var className = 'test';
+      var className = 'test';
 
-    var hasClass = cssClass.has(selectedElement, className);
+      var hasClass = cssClass.has(selectedElement, className);
 
-    expect(hasClass).toBe(false);
+      expect(hasClass).toBe(false);
 
-  });
+    });
 });

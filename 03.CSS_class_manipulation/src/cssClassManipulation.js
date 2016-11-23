@@ -1,16 +1,29 @@
 var cssClass = (function() {
   'use strict';
 
-  // code goes here
+  function checkRequieredProperties(requiredPropertiesObject) {
+    for (var key in requiredPropertiesObject) {
+      if (typeof requiredPropertiesObject[key] === 'undefined') {
+        switch (key) {
+          case 'htmlElement':
+            throw new Error('HTML Element not provided');
+          case 'className':
+            throw new Error('Class Name not provided');
+          default:
+            break;
+        }
+      }
+    }
+  }
+
   function add(htmlElement, className) {
 
-    if(!htmlElement){
-      throw new Error('HTML Element not provided');
-    }
+    var requiredProperties = {
+      htmlElement: htmlElement,
+      className: className
+    };
 
-    if(!className){
-      throw new Error('Class Name not provided');
-    }
+    checkRequieredProperties(requiredProperties);
 
     htmlElement.classList.add(className);
 
@@ -18,13 +31,12 @@ var cssClass = (function() {
 
   function remove(htmlElement, className) {
 
-    if(!htmlElement){
-      throw new Error('HTML Element not provided');
-    }
+    var requiredProperties = {
+      htmlElement: htmlElement,
+      className: className
+    };
 
-    if(!className){
-      throw new Error('Class Name not provided');
-    }
+    checkRequieredProperties(requiredProperties);
 
     htmlElement.classList.remove(className);
 
@@ -32,13 +44,12 @@ var cssClass = (function() {
 
   function toggle(htmlElement, className) {
 
-    if(!htmlElement){
-      throw new Error('HTML Element not provided');
-    }
+    var requiredProperties = {
+      htmlElement: htmlElement,
+      className: className
+    };
 
-    if(!className){
-      throw new Error('Class Name not provided');
-    }
+    checkRequieredProperties(requiredProperties);
 
     htmlElement.classList.toggle(className);
 
@@ -46,23 +57,22 @@ var cssClass = (function() {
 
   function has(htmlElement, className) {
 
-    if(!htmlElement){
-      throw new Error('HTML Element not provided');
-    }
+    var requiredProperties = {
+      htmlElement: htmlElement,
+      className: className
+    };
 
-    if(!className){
-      throw new Error('Class Name not provided');
-    }
+    checkRequieredProperties(requiredProperties);
 
     return htmlElement.classList.contains(className);
 
   }
 
-  return{
-    add:    add,
+  return {
+    add: add,
     remove: remove,
     toggle: toggle,
-    has:    has
-  }
+    has: has
+  };
 
 })();
