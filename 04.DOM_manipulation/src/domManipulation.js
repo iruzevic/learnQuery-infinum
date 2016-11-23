@@ -1,9 +1,9 @@
-var dom = function(){
+var dom = function() {
   'use strict';
 
-  function remove(element){
+  function remove(element) {
 
-    if(!element){
+    if (!element) {
       throw new Error('target element not provided or not in dom');
     }
 
@@ -13,40 +13,40 @@ var dom = function(){
 
   function append(targetElement, element) {
 
-      if(!targetElement){
-        throw new Error('target element not provided or not in dom');
-      }
+    if (!targetElement) {
+      throw new Error('target element not provided or not in dom');
+    }
 
-      if(!element){
-        throw new Error('element not provided');
-      }
+    if (!element) {
+      throw new Error('element not provided');
+    }
 
-      var newElement = document.createElement(element);
-      targetElement.appendChild(newElement);
+    var newElement = document.createElement(element);
+    targetElement.appendChild(newElement);
   }
 
   function prepend(targetElement, element) {
 
-      if(!targetElement){
-        throw new Error('target element not provided or not in dom');
-      }
+    if (!targetElement) {
+      throw new Error('target element not provided or not in dom');
+    }
 
-      if(!element){
-        throw new Error('element not provided');
-      }
+    if (!element) {
+      throw new Error('element not provided');
+    }
 
-      var newElement = document.createElement(element);
-      targetElement.insertBefore(newElement, targetElement.firstChild);
+    var newElement = document.createElement(element);
+    targetElement.insertBefore(newElement, targetElement.firstChild);
 
   }
 
   function after(targetElement, element) {
 
-    if(!targetElement){
+    if (!targetElement) {
       throw new Error('target element not provided or not in dom');
     }
 
-    if(!element){
+    if (!element) {
       throw new Error('element not provided');
     }
 
@@ -57,11 +57,11 @@ var dom = function(){
 
   function before(targetElement, element) {
 
-    if(!targetElement){
+    if (!targetElement) {
       throw new Error('target element not provided or not in dom');
     }
 
-    if(!element){
+    if (!element) {
       throw new Error('element not provided');
     }
 
@@ -72,7 +72,7 @@ var dom = function(){
 
   function val(targetElement) {
 
-    if(!targetElement){
+    if (!targetElement) {
       throw new Error('target element not provided or not in dom');
     }
 
@@ -81,11 +81,11 @@ var dom = function(){
   }
 
   return {
-    remove:   remove,
-    append:   append,
-    prepend:  prepend,
-    after:    after,
-    before:   before,
-    val:      val
-  }
+    remove: remove,
+    append: append,
+    prepend: prepend,
+    after: after,
+    before: before,
+    val: val
+  };
 };
