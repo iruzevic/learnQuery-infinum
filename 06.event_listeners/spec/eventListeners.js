@@ -75,27 +75,39 @@ describe('EventListeners', function() {
     function() {
       // code goes here
 
-      // expect(methods.showLove.calls.count()).toEqual(0);
+      expect(methods.showLove.calls.count()).toEqual(0);
+      expect(methods.moreLove.calls.count()).toEqual(0);
 
       eventListener.on(selectedElement, 'click', methods.showLove);
-      eventListener.trigger(selectedElement, 'click');
-
-      console.log(methods.showLove.calls.count());
+      eventListener.on(selectedElement, 'click', methods.moreLove);
 
       eventListener.off(selectedElement, 'click', methods.showLove);
 
-      // TODO: finish
+      eventListener.trigger(selectedElement, 'click');
 
-      console.log(methods.showLove.calls.count());
-
-      // expect(methods.showLove.calls.count()).toEqual(1);
-
+      expect(methods.showLove.calls.count()).toEqual(0);
+      expect(methods.moreLove.calls.count()).toEqual(1);
 
     });
 
   it('should be able to remove all click events of a HTML element',
     function() {
-      // code goes here
+
+      expect(methods.showLove.calls.count()).toEqual(0);
+      expect(methods.moreLove.calls.count()).toEqual(0);
+
+      eventListener.on(selectedElement, 'click', methods.showLove);
+      eventListener.on(selectedElement, 'click', methods.moreLove);
+      eventListener.on(selectedElement, 'dblclick', methods.showLove);
+
+      eventListener.off(selectedElement, 'click');
+
+      eventListener.trigger(selectedElement, 'click');
+      eventListener.trigger(selectedElement, 'dblclick');
+
+      expect(methods.showLove.calls.count()).toEqual(1);
+      expect(methods.moreLove).not.toHaveBeenCalled();
+
     });
 
   it('should be able to remove all events of a HTML element', function() {

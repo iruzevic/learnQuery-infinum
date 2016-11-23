@@ -3,6 +3,40 @@ var eventListener = (function() {
 
   var eventList = {};
 
+  // var f = EventTarget.prototype.addEventListener;
+  // EventTarget.prototype.addEventListener = function(type, fn, capture) {
+  //   this.f = f;
+  //   this.f(type, fn, capture);
+  //   alert('Added Event Listener: on' + type);
+  // };
+
+  var getAllEventListeners = function(element, event) {
+    var eventsAray = [];
+    if (event) {
+      eventsAray = eventList[element];
+    } else {
+      eventsAray = eventList[element][event];
+    }
+
+    return eventsAray;
+  };
+
+  var hasEventListener = function(element, event, callback) {
+    if (!eventList || !eventList[element] || !eventList[element][event]) {
+      return false;
+    }
+
+    for (var i = 0; i < eventList[element][event].length; i++) {
+      if (eventList[element][event][i] === callback) {
+        return true;
+      }
+    }
+
+    return false;
+  };
+
+
+
   var setAddEventListenerList = function(element, event, callback) {
 
     if (!eventList[element]) {
@@ -19,40 +53,25 @@ var eventListener = (function() {
   var addTheSameEventListener = function(element, event, callback) {
 
     var init;
-    if (!element['on' + event]) {
+    var eventAction = 'on' + event;
+    if (!element[eventAction]) {
       init = function() {
 
         // any clear comments.
       };
     } else {
-      init = element['on' + event];
+      init = element[eventAction];
     }
 
-    element['on' + event] = function() {
+    element[eventAction] = function() {
       init();
       callback();
     };
-
-
-
   };
 
-  var hasEventListener = function(element, event, callback) {
+  var removeAllEventListeners = function(element) {
 
-    if (!eventList || !eventList[element] || !eventList[element][event]) {
-      return false;
-    }
-
-    for (var i = 0; i < eventList[element][event].length; i++) {
-      if (eventList[element][event][i] === callback) {
-        return true;
-      }
-    }
-
-    return false;
   };
-
-
 
   return {
     on: function(element, event, callback) {
@@ -75,7 +94,20 @@ var eventListener = (function() {
       element.dispatchEvent(eventObject);
     },
     off: function(element, event, callback) {
-      element.removeEventListener(event, callback, false);
+
+      if (!callback && !event) {
+        element.removeEventListener(event, callback, false);
+      } else if (!callback) {
+        var eventsArray = getAllEventListeners(element, event);
+        console.log(eventsArray);
+        for (var i = 0; i < eventsArray.length; i++) {
+          element.removeEventListener(event, eventsArray[i]);
+        }
+      } else {
+        console.log('c');
+        // removeAllEventListeners(element);
+        element.removeEventListener(event, callback, false);
+      }
     }
   };
 })();
