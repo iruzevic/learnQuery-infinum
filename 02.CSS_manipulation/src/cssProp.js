@@ -1,57 +1,59 @@
-function cssProp( htmlElement, cssProperty, value ) {
+// set values from object to style property
+function setStyleObject(element, propertyObject) {
   'use strict';
 
-  var el = '';
+  var prop = '';
 
-  //set values from object to style property
-  function setStyleObject( htmlElement, propertyObject ) {
-
-    var prop = '';
-
-    for (prop in propertyObject) {
-       if (propertyObject.hasOwnProperty(prop)) {
-         htmlElement.style[prop] = propertyObject[prop];
-       }
-     }
+  for (prop in propertyObject) {
+    if (propertyObject.hasOwnProperty(prop)) {
+      element.style[prop] = propertyObject[prop];
+    }
   }
+}
 
-  function getPropertyValue(htmlElement, cssProperty){
-    return window.getComputedStyle(htmlElement, null).getPropertyValue(cssProperty);
-  }
+function getPropertyValue(element, cssPropertyValue) {
+  'use strict';
 
-  function getAllElementStyles(htmlElement){
-    return htmlElement.style.cssText
-  }
+  return window.getComputedStyle(element, null).getPropertyValue(
+    cssPropertyValue);
+}
 
-  if(!htmlElement){
+function getAllElementStyles(element) {
+  'use strict';
+
+  return element.style.cssText;
+}
+
+function cssProp(htmlElement, cssProperty, value) {
+  'use strict';
+
+  if (!htmlElement) {
     throw new Error('HTML Element not provided');
   }
 
-  //check if object or property was passed as argument
-  if( typeof cssProperty === 'object') {
+  // check if object or property was passed as argument
+  if (typeof cssProperty === 'object') {
 
-    setStyleObject( htmlElement, cssProperty );
+    setStyleObject(htmlElement, cssProperty);
 
-  }else{
+  } else {
 
     var cssPropertyObject = {};
-    cssPropertyObject[cssProperty] = value
+    cssPropertyObject[cssProperty] = value;
 
-    if(value) {
+    if (value) {
 
-      setStyleObject( htmlElement, cssPropertyObject );
+      setStyleObject(htmlElement, cssPropertyObject);
+
+    } else if (cssProperty) {
+
+      return getPropertyValue(htmlElement, cssProperty);
 
     } else {
 
-      if(cssProperty) {
+      return getAllElementStyles(htmlElement);
 
-        return getPropertyValue(htmlElement, cssProperty)
-
-      } else {
-
-        return getAllElementStyles(htmlElement);
-
-      }
     }
+
   }
 }

@@ -6,7 +6,9 @@ describe('cssProp', function() {
   var $selectedElement, selectedElement;
 
   beforeEach(function() {
-    affix('.learn-query-testing #toddler .hidden.toy+h1[class="title"]+span[class="subtitle"]+span[class="subtitle"]+input[name="toyName"][value="cuddle bunny"]+input[class="creature"][value="unicorn"]+.hidden+.infinum[value="awesome cool"]');
+    affix(
+      '.learn-query-testing #toddler .hidden.toy+h1[class="title"]+span[class="subtitle"]+span[class="subtitle"]+input[name="toyName"][value="cuddle bunny"]+input[class="creature"][value="unicorn"]+.hidden+.infinum[value="awesome cool"]'
+    );
 
     $selectedElement = $('#toddler');
     selectedElement = $selectedElement[0];
@@ -22,40 +24,45 @@ describe('cssProp', function() {
     expect($selectedElement.css(property)).toEqual(value);
   });
 
-  it('should return an existing CSS property value of an HTML element', function() {
+  it('should return an existing CSS property value of an HTML element',
+    function() {
 
-    var property = 'color';
+      var property = 'color';
 
-    expect($selectedElement.css(property)).toEqual(cssProp(selectedElement, property));
+      expect($selectedElement.css(property)).toEqual(cssProp(
+        selectedElement, property));
 
-  });
+    });
 
   it('should set multiple CSS properties of an HTML element', function() {
 
     var propertyObj = {
-      'font-size' : '40px',
-      'color'     : 'red',
-      'position'  : 'relative'
+      'font-size': '40px',
+      'color': 'red',
+      'position': 'relative'
     };
 
     cssProp(selectedElement, propertyObj);
 
-    expect(cssProp(selectedElement)).toMatch($selectedElement.attr('style'));
+    expect($selectedElement.attr('style')).toMatch(selectedElement.style
+      .cssText);
   });
 
-  it('should properly set CSS properties if called multiple times on different HTML elements', function() {
+  it(
+    'should properly set CSS properties if called multiple times on different HTML elements',
+    function() {
 
-    var property = 'fontSize';
-    var $anotherSelectedElement = $('.learn-query-testing');
-    var anotherSelectedElement = $anotherSelectedElement[0];
+      var property = 'fontSize';
+      var $anotherSelectedElement = $('.learn-query-testing');
+      var anotherSelectedElement = $anotherSelectedElement[0];
 
-    cssProp( selectedElement, property, 0);
+      cssProp(selectedElement, property, 0);
+      cssProp(selectedElement, property, '20px');
 
-    cssProp(selectedElement, property, '20px');
-    cssProp(anotherSelectedElement, property, '20px');
-    cssProp(anotherSelectedElement, property, '40px');
+      cssProp(anotherSelectedElement, property, '20px');
+      cssProp(anotherSelectedElement, property, '40px');
 
-    expect($selectedElement.css(property)).toEqual('20px');
-    expect($anotherSelectedElement.css(property)).toEqual('40px');
-  });
+      expect($selectedElement.css(property)).toEqual('20px');
+      expect($anotherSelectedElement.css(property)).toEqual('40px');
+    });
 });

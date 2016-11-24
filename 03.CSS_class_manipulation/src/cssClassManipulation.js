@@ -1,16 +1,18 @@
 var cssClass = (function() {
   'use strict';
 
-  // code goes here
-  function add(htmlElement, className) {
-
-    if(!htmlElement){
+  function checkRequiredProperties(htmlElement, className) {
+    if (typeof htmlElement === 'undefined') {
       throw new Error('HTML Element not provided');
     }
-
-    if(!className){
+    if (typeof className === 'undefined') {
       throw new Error('Class Name not provided');
     }
+  }
+
+  function add(htmlElement, className) {
+
+    checkRequiredProperties(htmlElement, className);
 
     htmlElement.classList.add(className);
 
@@ -18,13 +20,7 @@ var cssClass = (function() {
 
   function remove(htmlElement, className) {
 
-    if(!htmlElement){
-      throw new Error('HTML Element not provided');
-    }
-
-    if(!className){
-      throw new Error('Class Name not provided');
-    }
+    checkRequiredProperties(htmlElement, className);
 
     htmlElement.classList.remove(className);
 
@@ -32,13 +28,7 @@ var cssClass = (function() {
 
   function toggle(htmlElement, className) {
 
-    if(!htmlElement){
-      throw new Error('HTML Element not provided');
-    }
-
-    if(!className){
-      throw new Error('Class Name not provided');
-    }
+    checkRequiredProperties(htmlElement, className);
 
     htmlElement.classList.toggle(className);
 
@@ -46,23 +36,17 @@ var cssClass = (function() {
 
   function has(htmlElement, className) {
 
-    if(!htmlElement){
-      throw new Error('HTML Element not provided');
-    }
-
-    if(!className){
-      throw new Error('Class Name not provided');
-    }
+    checkRequiredProperties(htmlElement, className);
 
     return htmlElement.classList.contains(className);
 
   }
 
-  return{
-    add:    add,
+  return {
+    add: add,
     remove: remove,
     toggle: toggle,
-    has:    has
-  }
+    has: has
+  };
 
 })();
