@@ -118,4 +118,48 @@ describe('domManipulation', function() {
       }).not.toThrowError();
 
     });
+
+  it(
+    'should not throw exception if the target element is not in the DOM when calling dom.before',
+    function() {
+
+      var $nonExistingElement = $('#toddlersss');
+      var nonExistingElement = $nonExistingElement[0];
+
+      var newElement = document.createElement('p');
+
+      expect(function() {
+        domSelector.before(nonExistingElement, newElement)
+      }).not.toThrowError();
+
+    });
+
+  it(
+    'should not throw exception if the target element is not in the DOM when calling dom.append',
+    function() {
+
+      var $nonExistingElement = $('#toddlersss');
+      var nonExistingElement = $nonExistingElement[0];
+
+      var newElement = document.createElement('p');
+
+      expect(function() {
+        domSelector.append(nonExistingElement, newElement)
+      }).not.toThrowError();
+
+    });
+  it(
+    'should not throw exception if the target element is not in the DOM when calling dom.append',
+    function() {
+
+      var $nonExistingElement = $('#toddlersss');
+      var nonExistingElement = $nonExistingElement[0];
+
+      var newElement = document.createElement('p');
+
+      expect(function() {
+        domSelector.prepend(nonExistingElement, newElement)
+      }).not.toThrowError();
+
+    });
 });
