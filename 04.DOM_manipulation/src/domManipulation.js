@@ -1,11 +1,18 @@
 var dom = function() {
   'use strict';
 
+  function checkRequiredProperties(targetElement, element) {
+    if (typeof targetElement === 'undefined') {
+      throw new Error('not provided');
+    }
+    if (typeof element === 'undefined') {
+      throw new Error('not provided');
+    }
+  }
+
   function remove(element) {
 
-    if (!element) {
-      throw new Error('target element not provided or not in dom');
-    }
+    checkRequiredProperties(false, element);
 
     element.parentNode.removeChild(element);
 
@@ -13,68 +20,37 @@ var dom = function() {
 
   function append(targetElement, element) {
 
-    if (!targetElement) {
-      throw new Error('target element not provided or not in dom');
-    }
+    checkRequiredProperties(targetElement, element);
 
-    if (!element) {
-      throw new Error('element not provided');
-    }
-
-    var newElement = document.createElement(element);
-    targetElement.appendChild(newElement);
+    targetElement.appendChild(element);
   }
 
   function prepend(targetElement, element) {
 
-    if (!targetElement) {
-      throw new Error('target element not provided or not in dom');
-    }
+    checkRequiredProperties(targetElement, element);
 
-    if (!element) {
-      throw new Error('element not provided');
-    }
-
-    var newElement = document.createElement(element);
-    targetElement.insertBefore(newElement, targetElement.firstChild);
+    targetElement.insertBefore(element, targetElement.firstChild);
 
   }
 
   function after(targetElement, element) {
 
-    if (!targetElement) {
-      throw new Error('target element not provided or not in dom');
-    }
+    checkRequiredProperties(targetElement, element);
 
-    if (!element) {
-      throw new Error('element not provided');
-    }
-
-    var newElement = document.createElement(element);
-    targetElement.parentNode.insertBefore(newElement, targetElement.nextSibling);
-
+    targetElement.parentNode.insertBefore(element, targetElement.nextSibling);
   }
 
   function before(targetElement, element) {
 
-    if (!targetElement) {
-      throw new Error('target element not provided or not in dom');
-    }
+    checkRequiredProperties(targetElement, element);
 
-    if (!element) {
-      throw new Error('element not provided');
-    }
-
-    var newElement = document.createElement(element);
-    targetElement.parentNode.insertBefore(newElement, targetElement);
+    targetElement.parentNode.insertBefore(element, targetElement);
 
   }
 
   function val(targetElement) {
 
-    if (!targetElement) {
-      throw new Error('target element not provided or not in dom');
-    }
+    checkRequiredProperties(targetElement, false);
 
     return targetElement.value;
 
