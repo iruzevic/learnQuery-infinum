@@ -6,7 +6,7 @@ describe('AjaxRequest', function() {
   beforeEach(function() {
     jasmine.Ajax.install();
 
-    this.onSuccessSpy = jasmine.createSpy('successs');
+    this.onSuccessSpy = jasmine.createSpy('success');
     this.onFailureSpy = jasmine.createSpy('failure');
     this.onCompleteSpy = jasmine.createSpy('complete');
 
@@ -33,7 +33,7 @@ describe('AjaxRequest', function() {
   });
 
   it('should make POST ajax request', function() {
-    var test= ajaxReq('/infinum/index', {
+    var test = ajaxReq('/infinum/index', {
       method: 'POST',
       success: this.onSuccessSpy,
       complete: this.onCompleteSpy,
@@ -46,92 +46,96 @@ describe('AjaxRequest', function() {
     expect(this.onCompleteSpy).toHaveBeenCalled();
   });
 
-  it('should call a custom function with proper context on failure', function() {
+  it('should call a custom function with proper context on failure',
+    function() {
 
-    var context = {
-      newContext: 'Test'
-    };
+      var context = {
+        newContext: 'Test'
+      };
 
-    var onFailure = function(xhr, status, responseText) {
-      expect(status).toBe(null);
-      expect(responseText).toBe('failure');
-      expect(this).toBe(context);
-      expect(this.newContext).toBe('Test');
-    };
+      var onFailure = function(xhr, status, responseText) {
+        expect(status).toBe(null);
+        expect(responseText).toBe('failure');
+        expect(this).toBe(context);
+        expect(this.newContext).toBe('Test');
+      };
 
-    var methods = {
-     onFailure: onFailure
-    };
+      var methods = {
+        onFailure: onFailure
+      };
 
-    spyOn(methods, 'onFailure').and.callFake(onFailure);
+      spyOn(methods, 'onFailure').and.callFake(onFailure);
 
-    ajaxReq('/infinum/notfound', {
-     success: this.onSuccessSpy,
-     failure: methods.onFailure,
-     complete: this.onCompleteSpy,
-     context: context
+      ajaxReq('/infinum/notfound', {
+        success: this.onSuccessSpy,
+        failure: methods.onFailure,
+        complete: this.onCompleteSpy,
+        context: context
+      });
+
+      expect(methods.onFailure).toHaveBeenCalled();
+      expect(this.onCompleteSpy).toHaveBeenCalled();
+      expect(this.onSuccessSpy).not.toHaveBeenCalled();
+
     });
 
-    expect(methods.onFailure).toHaveBeenCalled();
-    expect(this.onCompleteSpy).toHaveBeenCalled();
-    expect(this.onSuccessSpy).not.toHaveBeenCalled();
+  it('should call a custom function with proper context on success',
+    function() {
+      var context = {
+        newContext: 'Test'
+      };
 
-  });
+      var onSuccess = function(data, status, xhr) {
+        expect(status).toBe(200);
+        expect(data.response).toBe('incredible cool things');
+        expect(this).toBe(context);
+        expect(this.newContext).toBe('Test');
+      };
 
-  it('should call a custom function with proper context on success', function() {
-    var context = {
-      newContext: 'Test'
-    };
+      var methods = {
+        onSuccess: onSuccess
+      };
 
-    var onSuccess = function(data, status, xhr) {
-      expect(status).toBe(200);
-      expect(data.response).toBe('incredible cool things');
-      expect(this).toBe(context);
-      expect(this.newContext).toBe('Test');
-    };
+      spyOn(methods, 'onSuccess').and.callFake(onSuccess);
 
-    var methods = {
-     onSuccess: onSuccess
-    };
+      ajaxReq('/infinum/index', {
+        success: methods.onSuccess,
+        failure: this.onFailureSpy,
+        complete: this.onCompleteSpy,
+        context: context
+      });
 
-    spyOn(methods, 'onSuccess').and.callFake(onSuccess);
-
-    ajaxReq('/infinum/index', {
-     success: methods.onSuccess,
-     failure: this.onFailureSpy,
-     complete: this.onCompleteSpy,
-     context: context
+      expect(methods.onSuccess).toHaveBeenCalled();
+      expect(this.onCompleteSpy).toHaveBeenCalled();
+      expect(this.onFailureSpy).not.toHaveBeenCalled();
     });
 
-    expect(methods.onSuccess).toHaveBeenCalled();
-    expect(this.onCompleteSpy).toHaveBeenCalled();
-    expect(this.onFailureSpy).not.toHaveBeenCalled();
-  });
+  it(
+    'should call a custom function with proper context when request is completed',
+    function() {
 
-  it('should call a custom function with proper context when request is completed', function() {
+      var context = {
+        newContext: 'Test'
+      };
 
-    var context = {
-      newContext: 'Test'
-    };
+      var onComplete = function() {
+        expect(this).toBe(context);
+        expect(this.newContext).toBe('Test');
+      };
 
-    var onComplete = function() {
-      expect(this).toBe(context);
-      expect(this.newContext).toBe('Test');
-    };
+      var methods = {
+        onComplete: onComplete
+      };
 
-    var methods = {
-     onComplete: onComplete
-    };
+      spyOn(methods, 'onComplete').and.callFake(onComplete);
 
-    spyOn(methods, 'onComplete').and.callFake(onComplete);
+      ajaxReq('/infinum/index', {
+        success: methods.onComplete,
+        failure: this.onFailureSpy,
+        complete: this.onCompleteSpy,
+        context: context
+      });
 
-    ajaxReq('/infinum/index', {
-     success: methods.onComplete,
-     failure: this.onFailureSpy,
-     complete: this.onCompleteSpy,
-     context: context
+      expect(methods.onComplete).toHaveBeenCalled();
     });
-
-    expect(methods.onComplete).toHaveBeenCalled();
-  });
 });
