@@ -79,7 +79,8 @@ describe('domManipulation', function() {
 
     expect(domSelector.val($selectedElement.find('input')[0])).toEqual(
       'cuddle bunny');
-    expect(domSelector.val($selectedElement.find('h1')[0])).toMatch('');
+    expect(domSelector.val($selectedElement.find('h1')[
+      0])).toMatch('');
 
   });
 

@@ -1,12 +1,10 @@
 var dom = function() {
   'use strict';
 
-  var elementNotFound = 'Element Not Found';
-
   function remove(element) {
 
-    if (!document.contains(element)) {
-      return elementNotFound;
+    if (document.contains(element) === false) {
+      return null;
     }
 
     element.parentNode.removeChild(element);
@@ -14,8 +12,8 @@ var dom = function() {
 
   function append(targetElement, element) {
 
-    if (!document.contains(targetElement)) {
-      return elementNotFound;
+    if (document.contains(targetElement) === false) {
+      return null;
     }
 
     targetElement.appendChild(element);
@@ -23,8 +21,8 @@ var dom = function() {
 
   function prepend(targetElement, element) {
 
-    if (!document.contains(targetElement)) {
-      return elementNotFound;
+    if (document.contains(targetElement) === false) {
+      return null;
     }
 
     targetElement.insertBefore(element, targetElement.firstChild);
@@ -33,8 +31,8 @@ var dom = function() {
 
   function after(targetElement, element) {
 
-    if (!document.contains(targetElement)) {
-      return elementNotFound;
+    if (document.contains(targetElement) === false) {
+      return null;
     }
 
     targetElement.parentNode.insertBefore(element, targetElement.nextSibling);
@@ -42,8 +40,8 @@ var dom = function() {
 
   function before(targetElement, element) {
 
-    if (!document.contains(targetElement)) {
-      return elementNotFound;
+    if (document.contains(targetElement) === false) {
+      return null;
     }
 
     targetElement.parentNode.insertBefore(element, targetElement);
@@ -51,6 +49,10 @@ var dom = function() {
   }
 
   function val(targetElement) {
+
+    if (document.contains(targetElement) === false) {
+      return null;
+    }
 
     var returnValue = '';
     if (typeof targetElement.value !== 'undefined') {
