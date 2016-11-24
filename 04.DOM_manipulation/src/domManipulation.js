@@ -1,33 +1,31 @@
 var dom = function() {
   'use strict';
 
-  function checkRequiredProperties(targetElement, element) {
-    if (typeof targetElement === 'undefined') {
-      throw new Error('not provided');
-    }
-    if (typeof element === 'undefined') {
-      throw new Error('not provided');
-    }
-  }
+  var elementNotFound = 'Element Not Found';
 
   function remove(element) {
 
-    checkRequiredProperties(false, element);
+    if (!document.contains(element)) {
+      return elementNotFound;
+    }
 
     element.parentNode.removeChild(element);
-
   }
 
   function append(targetElement, element) {
 
-    checkRequiredProperties(targetElement, element);
+    if (!document.contains(targetElement)) {
+      return elementNotFound;
+    }
 
     targetElement.appendChild(element);
   }
 
   function prepend(targetElement, element) {
 
-    checkRequiredProperties(targetElement, element);
+    if (!document.contains(targetElement)) {
+      return elementNotFound;
+    }
 
     targetElement.insertBefore(element, targetElement.firstChild);
 
@@ -35,14 +33,18 @@ var dom = function() {
 
   function after(targetElement, element) {
 
-    checkRequiredProperties(targetElement, element);
+    if (!document.contains(targetElement)) {
+      return elementNotFound;
+    }
 
     targetElement.parentNode.insertBefore(element, targetElement.nextSibling);
   }
 
   function before(targetElement, element) {
 
-    checkRequiredProperties(targetElement, element);
+    if (!document.contains(targetElement)) {
+      return elementNotFound;
+    }
 
     targetElement.parentNode.insertBefore(element, targetElement);
 
@@ -50,10 +52,11 @@ var dom = function() {
 
   function val(targetElement) {
 
-    checkRequiredProperties(targetElement, false);
-
-    return targetElement.value;
-
+    var returnValue = '';
+    if (typeof targetElement.value !== 'undefined') {
+      returnValue = targetElement.value;
+    }
+    return returnValue;
   }
 
   return {

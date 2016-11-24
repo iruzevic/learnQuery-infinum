@@ -16,11 +16,12 @@ describe('domManipulation', function() {
 
   it('should be able to remove a HTML element', function() {
 
-    expect(selectedElement).not.toBeUndefined();
+    expect(document.contains(selectedElement)).toBe(true);
 
     domSelector.remove(selectedElement);
 
-    expect($('#toddler')[0]).toBeUndefined();
+    expect(document.contains(selectedElement)).toBe(false);
+
   });
 
   it('should append a HTML element to the given element', function() {
@@ -78,7 +79,7 @@ describe('domManipulation', function() {
 
     expect(domSelector.val($selectedElement.find('input')[0])).toEqual(
       'cuddle bunny');
-    expect(domSelector.val($selectedElement.find('h1')[0])).toBeUndefined();
+    expect(domSelector.val($selectedElement.find('h1')[0])).toMatch('');
 
   });
 
@@ -93,12 +94,12 @@ describe('domManipulation', function() {
     'should not throw exception if the target element is not in the DOM when calling dom.remove',
     function() {
 
-      var $nonExistingElement = $('toddlers');
+      var $nonExistingElement = $('#toddlersss');
       var nonExistingElement = $nonExistingElement[0];
 
       expect(function() {
         domSelector.remove(nonExistingElement)
-      }).toThrowError('not provided');
+      }).not.toThrowError();
 
     });
 
@@ -106,12 +107,14 @@ describe('domManipulation', function() {
     'should not throw exception if the target element is not in the DOM when calling dom.after',
     function() {
 
-      var $nonExistingElement = $('toddlers');
+      var $nonExistingElement = $('#toddlersss');
       var nonExistingElement = $nonExistingElement[0];
 
+      var newElement = document.createElement('p');
+
       expect(function() {
-        domSelector.after(nonExistingElement, 'p')
-      }).toThrowError('not provided');
+        domSelector.after(nonExistingElement, newElement)
+      }).not.toThrowError();
 
     });
 });
