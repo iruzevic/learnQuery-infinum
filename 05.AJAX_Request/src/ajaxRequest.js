@@ -1,4 +1,4 @@
-function doAjaxReq(url, options) {
+function ajaxReq(url, options) {
   'use strict';
 
   var httpRequest = new XMLHttpRequest();
@@ -6,38 +6,36 @@ function doAjaxReq(url, options) {
     return false;
   }
 
-  function alertContents() {
+  function doAjaxReq() {
+
+    var ajaxRequest = httpRequest;
+    var ajaxStatus = httpRequest.status;
+    var context = options.context;
 
     if (httpRequest.readyState === 4) {
-      if (httpRequest.status === 200) {
-        return httpRequest.responseText;
+      if (ajaxStatus === 200) {
+        var data = JSON.parse(ajaxRequest.responseText);
+        options.success.call(context, data, ajaxStatus, ajaxRequest);
       } else {
-        throw new Error('There was a problem with the request.');
+        options.failure.call(context, 'failure', ajaxRequest);
       }
+      options.complete.call(context, 'done', ajaxRequest);
     }
   }
 
   var method = options.method;
+  if (typeof options.method === 'undefined') {
+    method = 'GET';
+  }
 
-  httpRequest.onreadystatechange = alertContents;
+  var dataValues = options.data;
+  if (typeof options.data === 'undefined') {
+    dataValues = '';
+  }
+
+  httpRequest.onreadystatechange = doAjaxReq;
   httpRequest.open(method, url);
-  httpRequest.send();
+  httpRequest.send(dataValues);
 
   return httpRequest;
-}
-
-function ajaxReq(url, options) {
-  'use strict';
-
-  var ajaxRequest = doAjaxReq(url, options);
-  var ajaxStatus = ajaxRequest.status;
-  var context = options.context;
-
-  if (ajaxStatus === 200) {
-    var data = JSON.parse(ajaxRequest.responseText);
-    options.success.call(context, data, ajaxStatus, {});
-  } else {
-    options.failure.call(context, {}, ajaxStatus, 'failure');
-  }
-  options.complete.call(context, {}, ajaxStatus);
 }
