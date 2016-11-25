@@ -13,13 +13,17 @@ function ajaxReq(url, options) {
     var context = options.context;
 
     if (httpRequest.readyState === 4) {
+      var data = JSON.parse(ajaxRequest.responseText);
       if (ajaxStatus === 200) {
-        var data = JSON.parse(ajaxRequest.responseText);
-        options.success.call(context, data, ajaxStatus, ajaxRequest);
-      } else {
-        options.failure.call(context, 'failure', ajaxRequest);
+        if (typeof options.success !== 'undefined') {
+          options.success.call(context, data, ajaxStatus, ajaxRequest);
+        }
+      } else if (typeof options.failure !== 'undefined') {
+        options.failure.call(context, data, ajaxStatus, ajaxRequest);
       }
-      options.complete.call(context, 'done', ajaxRequest);
+      if (typeof options.complete !== 'undefined') {
+        options.complete.call(context, 'done', ajaxRequest);
+      }
     }
   }
 

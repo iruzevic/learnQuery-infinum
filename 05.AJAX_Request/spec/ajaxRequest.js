@@ -17,7 +17,7 @@ describe('AjaxRequest', function() {
 
     jasmine.Ajax.stubRequest('/infinum/notfound').andReturn({
       status: 404,
-      responseText: ''
+      responseText: '{ "response": "not found" }'
     });
   });
 
@@ -66,8 +66,9 @@ describe('AjaxRequest', function() {
         test: 'test'
       };
 
-      var onFailureCall = function(data) {
-        expect(data).toBe('failure');
+      var onFailureCall = function(data, textStatus) {
+        expect(textStatus).toBe(404);
+        expect(data.response).toBe('not found');
         expect(this).toBe(context);
         done();
       };
