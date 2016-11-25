@@ -22,7 +22,7 @@ function ajaxReq(url, options) {
         options.failure.call(context, data, ajaxStatus, ajaxRequest);
       }
       if (typeof options.complete !== 'undefined') {
-        options.complete.call(context, 'done', ajaxRequest);
+        options.complete.call(context, data, ajaxRequest);
       }
     }
   }

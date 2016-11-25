@@ -119,7 +119,7 @@ describe('AjaxRequest', function() {
       };
 
       var onCompleteCall = function(data) {
-        expect(data).toBe('done');
+        expect(data.response).toBe('incredible cool things');
         expect(this).toBe(context);
         done();
       };
