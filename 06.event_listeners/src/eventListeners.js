@@ -3,19 +3,12 @@ var eventListener = (function() {
 
   var eventList = {};
 
-  // var f = EventTarget.prototype.addEventListener;
-  // EventTarget.prototype.addEventListener = function(type, fn, capture) {
-  //   this.f = f;
-  //   this.f(type, fn, capture);
-  //   alert('Added Event Listener: on' + type);
-  // };
-
   var getAllEventListeners = function(element, event) {
     var eventsAray = [];
     if (event) {
-      eventsAray = eventList[element];
-    } else {
       eventsAray = eventList[element][event];
+    } else {
+      eventsAray = eventList[element];
     }
 
     return eventsAray;
@@ -34,8 +27,6 @@ var eventListener = (function() {
 
     return false;
   };
-
-
 
   var setAddEventListenerList = function(element, event, callback) {
 
@@ -69,9 +60,26 @@ var eventListener = (function() {
     };
   };
 
-  var removeAllEventListeners = function(element) {
-
+  var getEventTarget = function(e) {
+    var ev = e || window.event;
+    return ev.target || ev.srcElement;
   };
+
+  var removeAllEventListeners = function(element, eventsArray) {
+    for (var key in eventsArray) {
+      if ({}.hasOwnProperty.call(eventsArray, key)) {
+        for (var j = 0; j < eventsArray[key].length; j++) {
+          element.removeEventListener(key, eventsArray[key][j]);
+        }
+      }
+    }
+  };
+
+  var removeEventListenerOfType = function(element, eventsArray, event) {
+    for (var i = 0; i < eventsArray.length; i++) {
+      element.removeEventListener(event, eventsArray[i]);
+    }
+  }
 
   return {
     on: function(element, event, callback) {
@@ -95,19 +103,36 @@ var eventListener = (function() {
     },
     off: function(element, event, callback) {
 
+      var eventsArray = getAllEventListeners(element, event);
+
       if (!callback && !event) {
-        element.removeEventListener(event, callback, false);
+
+        removeAllEventListeners(element, eventsArray);
+
       } else if (!callback) {
-        var eventsArray = getAllEventListeners(element, event);
-        console.log(eventsArray);
-        for (var i = 0; i < eventsArray.length; i++) {
-          element.removeEventListener(event, eventsArray[i]);
-        }
+
+        removeEventListenerOfType(element, eventsArray, event);
+
       } else {
-        console.log('c');
-        // removeAllEventListeners(element);
+
         element.removeEventListener(event, callback, false);
+
       }
+    },
+    delegate: function(monitoredElement, className, event, callback) {
+
+      monitoredElement.addEventListener(event, function(e) {
+        var target = getEventTarget(e);
+
+        if (className === '') {
+          return false;
+        }
+
+        if (target.className === className || target.parentNode.className ===
+          className) {
+          return callback.call();
+        }
+      }, false);
     }
   };
 })();

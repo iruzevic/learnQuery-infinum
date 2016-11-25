@@ -106,62 +106,128 @@ describe('EventListeners', function() {
       eventListener.trigger(selectedElement, 'dblclick');
 
       expect(methods.showLove.calls.count()).toEqual(1);
-      expect(methods.moreLove).not.toHaveBeenCalled();
+      expect(methods.moreLove.calls.count()).toEqual(0);
 
     });
 
   it('should be able to remove all events of a HTML element', function() {
     // code goes here
+    eventListener.on(selectedElement, 'click', methods.showLove);
+    eventListener.on(selectedElement, 'click', methods.moreLove);
+    eventListener.on(selectedElement, 'dblclick', methods.showLove);
+    eventListener.on(selectedElement, 'dblclick', methods.moreLove);
+
+    eventListener.off(selectedElement);
+
+    eventListener.trigger(selectedElement, 'click');
+    eventListener.trigger(selectedElement, 'dblclick');
+
+    expect(methods.showLove.calls.count()).toEqual(0);
+    expect(methods.moreLove.calls.count()).toEqual(0);
+
   });
 
   it('should trigger a click event on a HTML element', function() {
     // code goes here
+
+    eventListener.on(selectedElement, 'click', methods.showLove);
+
+    eventListener.trigger(selectedElement, 'click');
+
+    expect(methods.showLove.calls.count()).toEqual(1);
   });
 
   it('should delegate an event to elements with a given css class name',
     function() {
-      // code goes here
+      eventListener.delegate(selectedElement, 'infinum', 'click', methods
+        .showLove);
+
+      $('.infinum').click();
+
+      expect(methods.showLove.calls.count()).toEqual(1);
     });
 
   it(
     'should not delegate an event to elements without a given css class name',
     function() {
-      // code goes here
+      eventListener.delegate(selectedElement, '', 'click', methods
+        .showLove);
+
+      $('.infinum').click();
+
+      expect(methods.showLove.calls.count()).toEqual(0);
     });
 
   it(
     'should delegate an event to elements that are added to the DOM to after delegate call',
     function() {
-      // code goes here
+
+      var newElementClass = 'new_element';
+      eventListener.delegate(selectedElement, newElementClass,
+        'click', methods.showLove);
+
+
+      $selectedElement.append('<div class="' + newElementClass +
+        '"></div>');
+
+      $('.' + newElementClass).click();
+
+      expect(methods.showLove.calls.count()).toEqual(1);
     });
 
   it(
     'should trigger delegated event handler when clicked on an element inside a targeted element',
     function() {
-      // code goes here
+
+      var newElementClass = 'new_element';
+
+      eventListener.delegate(selectedElement, 'infinum', 'click', methods
+        .showLove);
+
+      $selectedElement.find('.infinum').append('<div class="' +
+        newElementClass + '"></div>');
+
+      $('.' + newElementClass).click();
+
+      expect(methods.showLove.calls.count()).toEqual(1);
     });
 
   it(
     'should not trigger delegated event handler if clicked on container of delegator',
     function() {
-      // code goes here
-    });
 
-  it(
-    'should not trigger delegated event handler if clicked on container of delegator',
-    function() {
-      // code goes here
+      eventListener.delegate(selectedElement, 'infinum', 'click', methods
+        .showLove);
+
+      $selectedElement.click();
+
+      expect(methods.showLove.calls.count()).toEqual(0);
+
     });
 
   it(
     'should trigger delegated event handler multiple times if event happens on multiple elements',
     function() {
-      // code goes here
+      eventListener.delegate(selectedElement, 'subtitle', 'click',
+        methods.showLove);
+
+      $('.subtitle').trigger('click');
+
+      expect(methods.showLove.calls.count()).toEqual(2);
     });
 
   it(
     'should not trigger method registered on element A when event is triggered on element B',
     function() {
-      // code goes here
+      var elementA = $selectedElement.find('.title')[0];
+      var elementB = $selectedElement.find('.infinum')[0];
+
+      eventListener.on(elementA, 'click', methods.showLove);
+      eventListener.on(elementB, 'click', methods.moreLove);
+
+      $(elementA).trigger('click');
+
+      expect(methods.showLove).toHaveBeenCalled();
+      expect(methods.moreLove).not.toHaveBeenCalled();
     });
 });
