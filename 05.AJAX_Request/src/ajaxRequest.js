@@ -24,18 +24,13 @@ function ajaxReq(url, options) {
   }
 
   var method = options.method;
-  if (typeof options.method === 'undefined') {
+  if (options.method !== 'POST') {
     method = 'GET';
-  }
-
-  var dataValues = options.data;
-  if (typeof options.data === 'undefined') {
-    dataValues = '';
   }
 
   httpRequest.onreadystatechange = doAjaxReq;
   httpRequest.open(method, url);
-  httpRequest.send(dataValues);
+  httpRequest.send(options.data);
 
   return httpRequest;
 }
