@@ -17,21 +17,6 @@ var eventListener = (function() {
     return eventList[element];
   };
 
-  function addEvent(obj, type, fn) {
-    if (obj.addEventListener) {
-
-      obj.addEventListener(type, fn, false);
-
-    } else if (obj.attachEvent) {
-
-      obj.attachEvent('on' + type, function() {
-
-        return fn.call(obj, window.event);
-
-      });
-    }
-  }
-
   var addEventListeners = function(element, event, callback) {
 
     var listeners = getElementsEventListeners(element);
