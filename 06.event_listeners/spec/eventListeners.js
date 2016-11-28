@@ -40,10 +40,12 @@ describe('EventListeners', function() {
     function() {
       eventListener.on(selectedElement, 'click', methods.showLove);
       eventListener.on(selectedElement, 'click', methods.showLove);
+      eventListener.on(selectedElement, 'click', methods.showLove);
+      // eventListener.on(selectedElement, 'click', methods.showLove);
 
       $selectedElement.click();
 
-      expect(methods.showLove.calls.count()).toEqual(2);
+      expect(methods.showLove.calls.count()).toEqual(3);
     });
 
 
@@ -128,9 +130,8 @@ describe('EventListeners', function() {
   });
 
   it('should trigger a click event on a HTML element', function() {
-    // code goes here
 
-    eventListener.on(selectedElement, 'click', methods.showLove);
+    selectedElement.addEventListener('click', methods.showLove);
 
     eventListener.trigger(selectedElement, 'click');
 
@@ -214,6 +215,7 @@ describe('EventListeners', function() {
       $('.subtitle').trigger('click');
 
       expect(methods.showLove.calls.count()).toEqual(2);
+      expect($('.subtitle').length).toEqual(2);
     });
 
   it(
@@ -229,5 +231,25 @@ describe('EventListeners', function() {
 
       expect(methods.showLove).toHaveBeenCalled();
       expect(methods.moreLove).not.toHaveBeenCalled();
+    });
+  it(
+    'should trigger delegated event handler when clicked on an element 2 levels inside a targeted element',
+    function() {
+
+      var newElementClass1 = 'new_element';
+      var newElementClass2 = 'new_element2';
+
+      eventListener.delegate(selectedElement, 'new_element2', 'click',
+        methods.showLove);
+
+      $selectedElement.find('.infinum').append('<div class="' +
+        newElementClass1 + '"><div class="' +
+        newElementClass2 + '"></div><div class="' +
+        newElementClass2 + '"></div></div>').append('<div class="' +
+        newElementClass2 + '"></div>');
+
+      $('.' + newElementClass2).click();
+
+      expect(methods.showLove.calls.count()).toEqual(3);
     });
 });

@@ -1,126 +1,112 @@
 var eventListener = (function() {
   'use strict';
 
-  var eventList = {};
+  var eventList = [];
 
-  var getAllEventListeners = function(element, event) {
-    var eventsAray = [];
-    if (event) {
-      eventsAray = eventList[element][event];
-    } else {
-      eventsAray = eventList[element];
-    }
-
-    return eventsAray;
-  };
-
-  var hasEventListener = function(element, event, callback) {
-    if (!eventList || !eventList[element] || !eventList[element][event]) {
-      return false;
-    }
-
-    for (var i = 0; i < eventList[element][event].length; i++) {
-      if (eventList[element][event][i] === callback) {
-        return true;
-      }
-    }
-
-    return false;
-  };
-
-  var setAddEventListenerList = function(element, event, callback) {
-
+  var setEventListenersList = function(element, event, callback) {
     if (!eventList[element]) {
       eventList[element] = [];
     }
-
     if (!eventList[element][event]) {
       eventList[element][event] = [];
     }
-
     eventList[element][event].push(callback);
   };
 
-  var addTheSameEventListener = function(element, event, callback) {
+  var getElementsEventListeners = function(element) {
+    return eventList[element];
+  };
 
-    var init;
-    var eventAction = 'on' + event;
-    if (!element[eventAction]) {
-      init = function() {
+  function addEvent(obj, type, fn) {
+    if (obj.addEventListener) {
 
-        // any clear comments.
-      };
-    } else {
-      init = element[eventAction];
+      obj.addEventListener(type, fn, false);
+
+    } else if (obj.attachEvent) {
+
+      obj.attachEvent('on' + type, function() {
+
+        return fn.call(obj, window.event);
+
+      });
     }
+  }
 
-    element[eventAction] = function() {
-      init();
-      callback();
+  var addEventListeners = function(element, event, callback) {
+
+    var listeners = getElementsEventListeners(element);
+    var eventType;
+
+    var callbackFunction = function(call) {
+
+      element.addEventListener(eventType, call);
+
+      // TODO: Multiple same events on the same element
+      // if (eventList[element][event] === callback) {
+      //   element.addEventListener(eventType, function() {
+      //     callback();
+      //   });
+      // }
+
     };
-  };
 
-  var getEventTarget = function(e) {
-    var ev = e || window.event;
-    return ev.target || ev.srcElement;
-  };
-
-  var removeAllEventListeners = function(element, eventsArray) {
-    for (var key in eventsArray) {
-      if ({}.hasOwnProperty.call(eventsArray, key)) {
-        for (var j = 0; j < eventsArray[key].length; j++) {
-          element.removeEventListener(key, eventsArray[key][j]);
-        }
+    for (eventType in listeners) {
+      if (listeners.hasOwnProperty(eventType)) {
+        listeners[eventType].forEach(callbackFunction);
       }
     }
   };
 
-  var removeEventListenerOfType = function(element, eventsArray, event) {
-    for (var i = 0; i < eventsArray.length; i++) {
-      element.removeEventListener(event, eventsArray[i]);
+  var removeEventListener = function(element, event, callback) {
+
+    var listeners = getElementsEventListeners(element);
+    var eventType;
+
+    var callbackFunction = function(call) {
+      if (!callback && !event) {
+        element.removeEventListener(eventType, call);
+      } else if (!callback) {
+        if (event === eventType) {
+          element.removeEventListener(eventType, call);
+        }
+      } else {
+        element.removeEventListener(event, callback);
+      }
+    };
+
+    for (eventType in listeners) {
+      if (listeners.hasOwnProperty(eventType)) {
+        listeners[eventType].forEach(callbackFunction);
+      }
     }
-  }
+
+  };
+
+  var getEventTarget = function(e) {
+    return e.target || e.srcElement;
+  };
 
   return {
     on: function(element, event, callback) {
 
-      if (hasEventListener(element, event, callback)) {
-        addTheSameEventListener(element, event, callback);
-      } else {
-        element.addEventListener(event, callback);
-      }
+      setEventListenersList(element, event, callback);
+      addEventListeners(element, event, callback);
 
-      setAddEventListenerList(element, event, callback);
     },
     trigger: function(element, event) {
+
       var eventObject = new Event(event);
 
-      element.addEventListener(event, function() {
-
-        // callback
-      });
+      element.addEventListener(event, false);
       element.dispatchEvent(eventObject);
+
     },
     off: function(element, event, callback) {
 
-      var eventsArray = getAllEventListeners(element, event);
+      removeEventListener(element, event, callback);
 
-      if (!callback && !event) {
-
-        removeAllEventListeners(element, eventsArray);
-
-      } else if (!callback) {
-
-        removeEventListenerOfType(element, eventsArray, event);
-
-      } else {
-
-        element.removeEventListener(event, callback, false);
-
-      }
     },
     delegate: function(monitoredElement, className, event, callback) {
-
       monitoredElement.addEventListener(event, function(e) {
         var target = getEventTarget(e);
 
@@ -130,7 +116,7 @@ var eventListener = (function() {
 
         if (target.className === className || target.parentNode.className ===
           className) {
-          return callback.call();
+          return callback();
         }
       }, false);
     }
