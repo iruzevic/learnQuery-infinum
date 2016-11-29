@@ -1,5 +1,8 @@
 function learnQuery(elementsSelector) {
   'use strict';
 
-  // code goes here
+  if (!elementsSelector) {
+    throw new Error('Selector not provided!');
+  }
+
 }
