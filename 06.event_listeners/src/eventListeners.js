@@ -13,58 +13,41 @@ var eventListener = (function() {
     eventList[element][event].push(callback);
   };
 
-  var getElementsEventListeners = function(element) {
-    return eventList[element];
-  };
-
   var addEventListeners = function(element, event, callback) {
 
-    var listeners = getElementsEventListeners(element);
-    var eventType;
+    if (!eventList || !eventList[element] || !eventList[element][event]) {
 
-    var callbackFunction = function(call) {
+      element.addEventListener(event, function(e) {
+        if (typeof eventList[element][event] !== 'undefined') {
+          eventList[element][event].forEach(function(call) {
+            call(e);
+          });
+        }
+      });
 
-      element.addEventListener(eventType, call);
-
-      // TODO: Multiple same events on the same element
-      // if (eventList[element][event] === callback) {
-      //   element.addEventListener(eventType, function() {
-      //     callback();
-      //   });
-      // }
-
-    };
-
-    for (eventType in listeners) {
-      if (listeners.hasOwnProperty(eventType)) {
-        listeners[eventType].forEach(callbackFunction);
-      }
     }
+
   };
 
   var removeEventListener = function(element, event, callback) {
 
-    var listeners = getElementsEventListeners(element);
-    var eventType;
+    if (!callback && !event) {
 
-    var callbackFunction = function(call) {
-      if (!callback && !event) {
-        element.removeEventListener(eventType, call);
-      } else if (!callback) {
-        if (event === eventType) {
-          element.removeEventListener(eventType, call);
-        }
-      } else {
-        element.removeEventListener(event, callback);
-      }
-    };
+      eventList[element] = {};
 
-    for (eventType in listeners) {
-      if (listeners.hasOwnProperty(eventType)) {
-        listeners[eventType].forEach(callbackFunction);
+    } else if (!callback) {
+
+      eventList[element][event] = [];
+
+    } else {
+
+      var callbackIndex = eventList[element][event].indexOf(callback);
+
+      if (callbackIndex !== -1) {
+        eventList[element][event].splice(callbackIndex, 1);
       }
+
     }
-
   };
 
   var getEventTarget = function(e) {
@@ -74,15 +57,13 @@ var eventListener = (function() {
   return {
     on: function(element, event, callback) {
 
-      setEventListenersList(element, event, callback);
       addEventListeners(element, event, callback);
+      setEventListenersList(element, event, callback);
 
     },
     trigger: function(element, event) {
 
       var eventObject = new Event(event);
-
-      element.addEventListener(event, false);
       element.dispatchEvent(eventObject);
 
     },
@@ -101,7 +82,7 @@ var eventListener = (function() {
 
         if (target.className === className || target.parentNode.className ===
           className) {
-          return callback();
+          return callback(e);
         }
       }, false);
     }

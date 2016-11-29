@@ -28,20 +28,24 @@ describe('EventListeners', function() {
   });
 
   it('should be able to add a click event to an HTML element', function() {
+
     eventListener.on(selectedElement, 'click', methods.showLove);
 
     $selectedElement.click();
 
     expect(methods.showLove).toHaveBeenCalled();
+
   });
 
   it(
     'should be able to add the same event+callback two times to an HTML element',
     function() {
+
+      eventListener.off(selectedElement);
+
       eventListener.on(selectedElement, 'click', methods.showLove);
       eventListener.on(selectedElement, 'click', methods.showLove);
       eventListener.on(selectedElement, 'click', methods.showLove);
-      // eventListener.on(selectedElement, 'click', methods.showLove);
 
       $selectedElement.click();
 
@@ -52,6 +56,9 @@ describe('EventListeners', function() {
   it(
     'should be able to add the same callback for two different events to an HTML element',
     function() {
+
+      eventListener.off(selectedElement);
+
       eventListener.on(selectedElement, 'click', methods.showLove);
       eventListener.on(selectedElement, 'dblclick', methods.showLove);
 
@@ -64,6 +71,9 @@ describe('EventListeners', function() {
   it(
     'should be able to add two different callbacks for same event to an HTML element',
     function() {
+
+      eventListener.off(selectedElement);
+
       eventListener.on(selectedElement, 'click', methods.showLove);
       eventListener.on(selectedElement, 'click', methods.moreLove);
 
@@ -75,7 +85,8 @@ describe('EventListeners', function() {
 
   it('should be able to remove one event handler of an HTML element',
     function() {
-      // code goes here
+
+      eventListener.off(selectedElement);
 
       expect(methods.showLove.calls.count()).toEqual(0);
       expect(methods.moreLove.calls.count()).toEqual(0);
@@ -85,7 +96,7 @@ describe('EventListeners', function() {
 
       eventListener.off(selectedElement, 'click', methods.showLove);
 
-      eventListener.trigger(selectedElement, 'click');
+      $selectedElement.click();
 
       expect(methods.showLove.calls.count()).toEqual(0);
       expect(methods.moreLove.calls.count()).toEqual(1);
@@ -113,7 +124,7 @@ describe('EventListeners', function() {
     });
 
   it('should be able to remove all events of a HTML element', function() {
-    // code goes here
+
     eventListener.on(selectedElement, 'click', methods.showLove);
     eventListener.on(selectedElement, 'click', methods.moreLove);
     eventListener.on(selectedElement, 'dblclick', methods.showLove);
@@ -140,6 +151,7 @@ describe('EventListeners', function() {
 
   it('should delegate an event to elements with a given css class name',
     function() {
+
       eventListener.delegate(selectedElement, 'infinum', 'click', methods
         .showLove);
 
@@ -151,6 +163,7 @@ describe('EventListeners', function() {
   it(
     'should not delegate an event to elements without a given css class name',
     function() {
+
       eventListener.delegate(selectedElement, '', 'click', methods
         .showLove);
 
@@ -174,6 +187,7 @@ describe('EventListeners', function() {
       $('.' + newElementClass).click();
 
       expect(methods.showLove.calls.count()).toEqual(1);
+
     });
 
   it(
