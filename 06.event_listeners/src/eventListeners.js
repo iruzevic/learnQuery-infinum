@@ -13,43 +13,6 @@ var eventListener = (function() {
     eventList[element][event].push(callback);
   };
 
-  var addEventListeners = function(element, event, callback) {
-
-    if (!eventList || !eventList[element] || !eventList[element][event]) {
-
-      element.addEventListener(event, function(e) {
-        if (typeof eventList[element][event] !== 'undefined') {
-          eventList[element][event].forEach(function(call) {
-            call(e);
-          });
-        }
-      });
-
-    }
-
-  };
-
-  var removeEventListener = function(element, event, callback) {
-
-    if (!callback && !event) {
-
-      eventList[element] = {};
-
-    } else if (!callback) {
-
-      eventList[element][event] = [];
-
-    } else {
-
-      var callbackIndex = eventList[element][event].indexOf(callback);
-
-      if (callbackIndex !== -1) {
-        eventList[element][event].splice(callbackIndex, 1);
-      }
-
-    }
-  };
-
   var getEventTarget = function(e) {
     return e.target || e.srcElement;
   };
@@ -57,7 +20,22 @@ var eventListener = (function() {
   return {
     on: function(element, event, callback) {
 
-      addEventListeners(element, event, callback);
+      if (!element) {
+        throw new Error('Element not provided');
+      }
+
+      if (!eventList || !eventList[element] || !eventList[element][event]) {
+
+        element.addEventListener(event, function(e) {
+          if (typeof eventList[element][event] !== 'undefined') {
+            eventList[element][event].forEach(function(call) {
+              call(e);
+            });
+          }
+        });
+
+      }
+
       setEventListenersList(element, event, callback);
 
     },
@@ -69,11 +47,30 @@ var eventListener = (function() {
     },
     off: function(element, event, callback) {
 
-      removeEventListener(element, event, callback);
+      if (!element) {
+        throw new Error('Element not provided');
+      }
 
+      if (!callback && !event) {
+
+        eventList[element] = {};
+
+      } else if (!callback) {
+
+        eventList[element][event] = [];
+
+      } else {
+
+        var callbackIndex = eventList[element][event].indexOf(callback);
+
+        if (callbackIndex !== -1) {
+          eventList[element][event].splice(callbackIndex, 1);
+        }
+
+      }
     },
     delegate: function(monitoredElement, className, event, callback) {
-      monitoredElement.addEventListener(event, function(e) {
+      eventListener.on(monitoredElement, event, function(e) {
         var target = getEventTarget(e);
 
         if (className === '') {
@@ -84,7 +81,7 @@ var eventListener = (function() {
           className) {
           return callback(e);
         }
-      }, false);
+      });
     }
   };
 })();

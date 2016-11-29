@@ -25,6 +25,8 @@ describe('EventListeners', function() {
 
     $selectedElement = $('#toddler');
     selectedElement = $selectedElement[0];
+
+    eventListener.off(selectedElement);
   });
 
   it('should be able to add a click event to an HTML element', function() {
@@ -41,8 +43,6 @@ describe('EventListeners', function() {
     'should be able to add the same event+callback two times to an HTML element',
     function() {
 
-      eventListener.off(selectedElement);
-
       eventListener.on(selectedElement, 'click', methods.showLove);
       eventListener.on(selectedElement, 'click', methods.showLove);
       eventListener.on(selectedElement, 'click', methods.showLove);
@@ -57,8 +57,6 @@ describe('EventListeners', function() {
     'should be able to add the same callback for two different events to an HTML element',
     function() {
 
-      eventListener.off(selectedElement);
-
       eventListener.on(selectedElement, 'click', methods.showLove);
       eventListener.on(selectedElement, 'dblclick', methods.showLove);
 
@@ -72,8 +70,6 @@ describe('EventListeners', function() {
     'should be able to add two different callbacks for same event to an HTML element',
     function() {
 
-      eventListener.off(selectedElement);
-
       eventListener.on(selectedElement, 'click', methods.showLove);
       eventListener.on(selectedElement, 'click', methods.moreLove);
 
@@ -85,8 +81,6 @@ describe('EventListeners', function() {
 
   it('should be able to remove one event handler of an HTML element',
     function() {
-
-      eventListener.off(selectedElement);
 
       expect(methods.showLove.calls.count()).toEqual(0);
       expect(methods.moreLove.calls.count()).toEqual(0);
