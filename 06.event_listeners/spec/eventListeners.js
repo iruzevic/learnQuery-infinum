@@ -266,7 +266,8 @@ describe('EventListeners', function() {
     function() {
       var className = 'js-delegated';
 
-      eventListener.delegate(selectedElement, className, 'click', methods.showLove);
+      eventListener.delegate(selectedElement, className, 'click', methods
+        .showLove);
 
       var $target = $(`<div class="${className}"></div>`);
       var $parent = $('<div></div>');
@@ -288,8 +289,10 @@ describe('EventListeners', function() {
     function() {
       var className = 'js-delegated2';
 
-      eventListener.delegate(selectedElement, className, 'click', methods.showLove);
-      eventListener.delegate(selectedElement, className, 'click', methods.showLove);
+      eventListener.delegate(selectedElement, className, 'click', methods
+        .showLove);
+      eventListener.delegate(selectedElement, className, 'click', methods
+        .showLove);
 
       $selectedElement.append($(`<div class="${className}"></div>`));
 
@@ -304,7 +307,8 @@ describe('EventListeners', function() {
     function() {
       var className = 'js-delegated3';
 
-      eventListener.delegate(selectedElement, className, 'click', methods.showLove);
+      eventListener.delegate(selectedElement, className, 'click', methods
+        .showLove);
 
       var $container = $('<div></div>');
       var $target = $(`<div class="${className}"></div>`);
@@ -323,7 +327,8 @@ describe('EventListeners', function() {
     function() {
       var className = 'js-delegated4';
 
-      eventListener.delegate(selectedElement, className, 'click', methods.showLove);
+      eventListener.delegate(selectedElement, className, 'click', methods
+        .showLove);
 
       var $target = $(`<div class="${className}"></div>`);
       var $child = $('<div></div>');
@@ -334,6 +339,30 @@ describe('EventListeners', function() {
       $selectedElement.append($target);
 
       $grandChild.click();
+
+      expect(methods.showLove.calls.count()).toBe(1);
+    }
+  )
+
+  it(
+    'should trigger a delegated handler when clicked on a descendant on a descendant of the delegation target',
+    function() {
+      var className = 'js-delegated4';
+
+      eventListener.delegate(selectedElement, className, 'click', methods
+        .showLove);
+
+      var $target = $(`<div class="${className}"></div>`);
+      var $child = $('<div></div>');
+      var $grandChild = $('<div></div>');
+      var $grandGrandChild = $('<div class="test"></div>');
+
+      $grandChild.append($grandGrandChild);
+      $child.append($grandChild);
+      $target.append($child);
+      $selectedElement.append($target);
+
+      $grandGrandChild.click();
 
       expect(methods.showLove.calls.count()).toBe(1);
     }

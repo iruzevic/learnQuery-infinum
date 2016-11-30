@@ -17,6 +17,10 @@ var eventListener = (function() {
     return e.target || e.srcElement;
   };
 
+  var getEventPath = function(e) {
+    return e.path;
+  };
+
   return {
     on: function(element, event, callback) {
 
@@ -71,16 +75,18 @@ var eventListener = (function() {
     },
     delegate: function(monitoredElement, className, event, callback) {
       eventListener.on(monitoredElement, event, function(e) {
-        var target = getEventTarget(e);
+        var path = getEventPath(e);
 
         if (className === '') {
           return false;
         }
 
-        if (target.className === className || target.parentNode.className ===
-          className) {
-          return callback(e);
-        }
+        path.forEach(function(pathItem) {
+          if (pathItem.className === className) {
+            return callback(e);
+          }
+        });
+
       });
     }
   };
