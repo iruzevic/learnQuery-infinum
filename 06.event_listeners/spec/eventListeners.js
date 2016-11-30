@@ -260,4 +260,82 @@ describe('EventListeners', function() {
 
       expect(methods.showLove.calls.count()).toEqual(3);
     });
+
+  it(
+    'should trigger the delegated event handler when clicked on an element deeper inside the targeted element',
+    function() {
+      var className = 'js-delegated';
+
+      eventListener.delegate(selectedElement, className, 'click', methods.showLove);
+
+      var $target = $(`<div class="${className}"></div>`);
+      var $parent = $('<div></div>');
+      var $container = $('<span></span>');
+      var $otherContainer = $('<main></main>');
+
+      $parent.append($target);
+      $container.append($target);
+      $otherContainer.append($container);
+      $selectedElement.append($otherContainer);
+
+      $(`.${className}`).click();
+      expect(methods.showLove.calls.count()).toBe(1);
+    }
+  );
+
+  it(
+    'should trigger the same handler delegated on the same element multiple times',
+    function() {
+      var className = 'js-delegated2';
+
+      eventListener.delegate(selectedElement, className, 'click', methods.showLove);
+      eventListener.delegate(selectedElement, className, 'click', methods.showLove);
+
+      $selectedElement.append($(`<div class="${className}"></div>`));
+
+      $(`.${className}`).click();
+
+      expect(methods.showLove.calls.count()).toBe(2);
+    }
+  );
+
+  it(
+    'should not trigger events clicked on a parent of the targeted element',
+    function() {
+      var className = 'js-delegated3';
+
+      eventListener.delegate(selectedElement, className, 'click', methods.showLove);
+
+      var $container = $('<div></div>');
+      var $target = $(`<div class="${className}"></div>`);
+
+      $container.append($target);
+      $selectedElement.append($target);
+
+      $container.click();
+
+      expect(methods.showLove.calls.count()).toBe(0);
+    }
+  );
+
+  it(
+    'should trigger a delegated handler when clicked on a descendant of the delegation target',
+    function() {
+      var className = 'js-delegated4';
+
+      eventListener.delegate(selectedElement, className, 'click', methods.showLove);
+
+      var $target = $(`<div class="${className}"></div>`);
+      var $child = $('<div></div>');
+      var $grandChild = $('<div></div>');
+
+      $child.append($grandChild);
+      $target.append($child);
+      $selectedElement.append($target);
+
+      $grandChild.click();
+
+      expect(methods.showLove.calls.count()).toBe(1);
+    }
+  )
 });
