@@ -366,5 +366,26 @@ describe('EventListeners', function() {
 
       expect(methods.showLove.calls.count()).toBe(1);
     }
+  );
+
+  it(
+    'should not trigger a delegated handler when the element container has the class',
+    function() {
+      var className = 'js-delegated5';
+
+      var $container = $(`<div class="${className}"></div>`);
+      var $elem = $('<div></div>');
+      var $child = $('<span></span>');
+
+      $elem.append($child);
+      $container.append($elem);
+      $selectedElement.append($container);
+
+      eventListener.delegate($container[0], className, 'click', methods.showLove);
+
+      $child.click();
+
+      expect(methods.showLove.calls.count()).toBe(0);
+    }
   )
 });
