@@ -75,19 +75,23 @@ var eventListener = (function() {
     },
     delegate: function(monitoredElement, className, event, callback) {
       eventListener.on(monitoredElement, event, function(e) {
+
         var path = getEventPath(e);
+        var target = getEventTarget(e);
 
         if (className === '') {
           return false;
         }
 
-        path.forEach(function(pathItem) {
-          if (pathItem.className === className && pathItem.className !==
-            monitoredElement.className) {
+        for (var pathItem of path) {
+          if (pathItem === monitoredElement) {
+            break;
+          }
+
+          if (pathItem.classList.contains(className)) {
             return callback(e);
           }
-        });
-
+        }
       });
     }
   };
