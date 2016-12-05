@@ -82,7 +82,8 @@ var eventListener = (function() {
         }
 
         path.forEach(function(pathItem) {
-          if (pathItem.className === className) {
+          if (pathItem.className === className && pathItem.className !==
+            monitoredElement.className) {
             return callback(e);
           }
         });
