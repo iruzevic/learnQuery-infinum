@@ -44,6 +44,27 @@ function checkRequiredProperties(className) {
   }
 }
 
+//Event Listeners
+var setEventListenersList = function(element, eventList, event, callback) {
+  'use strict';
+  if (!eventList[element]) {
+    eventList[element] = [];
+  }
+  if (!eventList[element][event]) {
+    eventList[element][event] = [];
+  }
+  eventList[element][event].push(callback);
+};
+
+var getEventTarget = function(e) {
+  'use strict';
+  return e.target || e.srcElement;
+};
+
+var getEventPath = function(e) {
+  'use strict';
+  return e.path;
+};
 
 
 function learnQuery(elementsSelector) {
@@ -53,30 +74,14 @@ function learnQuery(elementsSelector) {
     throw new Error('Selector not provided!');
   }
 
+  var eventList = [];
+
   var htmlElement = domSelector(elementsSelector);
   htmlElement = htmlElement[0];
 
   return {
-    addClass: function(className) {
-      checkRequiredProperties(className);
-      htmlElement.classList.add(className);
-      return this;
-    },
-    removeClass: function(className) {
-      checkRequiredProperties(className);
-      htmlElement.classList.remove(className);
-      return this;
-    },
-    toggleClass: function(className) {
-      checkRequiredProperties(className);
-      htmlElement.classList.toggle(className);
-      return this;
-    },
-    hasClass: function(className) {
-      checkRequiredProperties(className);
-      return htmlElement.classList.contains(className);
-    },
 
+    // CSS manipulation functions
     cssProp: function(htmlElement, cssProperty, value) {
       'use strict';
 
@@ -113,6 +118,28 @@ function learnQuery(elementsSelector) {
       }
     },
 
+    // CSS Class Manipulation functions
+    addClass: function(className) {
+      checkRequiredProperties(className);
+      htmlElement.classList.add(className);
+      return this;
+    },
+    removeClass: function(className) {
+      checkRequiredProperties(className);
+      htmlElement.classList.remove(className);
+      return this;
+    },
+    toggleClass: function(className) {
+      checkRequiredProperties(className);
+      htmlElement.classList.toggle(className);
+      return this;
+    },
+    hasClass: function(className) {
+      checkRequiredProperties(className);
+      return htmlElement.classList.contains(className);
+    },
+
+    //DOM Manipulation
     remove: function(element) {
 
       if (document.contains(element) === false) {
@@ -174,6 +201,7 @@ function learnQuery(elementsSelector) {
       return returnValue;
     },
 
+    //Ajax Request
     ajaxReq: function(url, options) {
       'use strict';
 
@@ -213,8 +241,85 @@ function learnQuery(elementsSelector) {
       httpRequest.send(options.data);
 
       return httpRequest;
-    }
+    },
 
+    //Event Listeners
+    on: function(event, callback) {
+
+      if (!htmlElement) {
+        throw new Error('Element not provided');
+      }
+
+      if (!eventList || !eventList[htmlElement] || !eventList[htmlElement][
+          event
+        ]) {
+
+        htmlElement.addEventListener(event, function(e) {
+          if (typeof eventList[htmlElement][event] !== 'undefined') {
+            eventList[htmlElement][event].forEach(function(call) {
+              call(e);
+            });
+          }
+        });
+
+      }
+
+      setEventListenersList(htmlElement, eventList, event, callback);
+      return this;
+    },
+    trigger: function(event) {
+
+      var eventObject = new Event(event);
+      htmlElement.dispatchEvent(eventObject);
+      return this;
+
+    },
+    off: function(event, callback) {
+
+      if (!htmlElement) {
+        throw new Error('Element not provided');
+      }
+
+      if (!callback && !event) {
+
+        eventList[htmlElement] = {};
+
+      } else if (!callback) {
+
+        eventList[htmlElement][event] = [];
+
+      } else {
+
+        var callbackIndex = eventList[htmlElement][event].indexOf(callback);
+
+        if (callbackIndex !== -1) {
+          eventList[htmlElement][event].splice(callbackIndex, 1);
+        }
+
+      }
+      return this;
+    },
+    delegate: function(className, event, callback) {
+      learnQuery(elementsSelector).on(event, function(e) {
+
+        var path = getEventPath(e);
+        var target = getEventTarget(e);
+
+        if (className === '') {
+          return false;
+        }
+
+        for (var pathItem of path) {
+          if (pathItem === htmlElement) {
+            break;
+          }
+
+          if (pathItem.classList.contains(className)) {
+            return callback(e);
+          }
+        }
+      });
+    }
 
   };
 
