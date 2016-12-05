@@ -381,11 +381,26 @@ describe('EventListeners', function() {
       $container.append($elem);
       $selectedElement.append($container);
 
-      eventListener.delegate($container[0], className, 'click', methods.showLove);
+      eventListener.delegate($elem[0], className, 'click', methods.showLove);
 
       $child.click();
 
       expect(methods.showLove.calls.count()).toBe(0);
+    }
+  );
+
+  it(
+    'should trigger if the listened element also has other classes',
+    function() {
+      var className = 'js-delegated6';
+      var $elem = $(`<div class="${className} big"></div>`);
+
+      $selectedElement.append($elem);
+
+      eventListener.delegate(selectedElement, className, 'click', methods.showLove);
+      $elem.click();
+
+      expect(methods.showLove.calls.count()).toBe(1);
     }
   )
 });
