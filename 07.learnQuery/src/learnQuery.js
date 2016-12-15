@@ -3,8 +3,7 @@ var domSelector = function(selectors) {
   'use strict';
   try {
     var selectedElement = document.querySelectorAll(selectors);
-    var selectedElementArray = Array.prototype.slice.call(selectedElement);
-    return selectedElementArray;
+    return Array.prototype.slice.call(selectedElement);
   } catch (e) {
     throw new Error('Invalid or non existing selector');
   }
@@ -14,7 +13,7 @@ var domSelector = function(selectors) {
 function setStyleObject(element, propertyObject) {
   'use strict';
 
-  var prop = '';
+  var prop;
 
   for (prop in propertyObject) {
     if (propertyObject.hasOwnProperty(prop)) {
@@ -26,8 +25,7 @@ function setStyleObject(element, propertyObject) {
 function getStylePropertyValue(element, cssPropertyValue) {
   'use strict';
 
-  return window.getComputedStyle(element, null).getStylePropertyValue(
-    cssPropertyValue);
+  return window.getComputedStyle(element).getPropertyValue(cssPropertyValue);
 }
 
 function getAllElementStyles(element) {
@@ -77,7 +75,6 @@ function learnQuery(elementsSelector) {
   var eventList = [];
 
   var htmlElement = domSelector(elementsSelector);
-  htmlElement = htmlElement[0];
 
   return {
 
@@ -121,17 +118,23 @@ function learnQuery(elementsSelector) {
     // CSS Class Manipulation functions
     addClass: function(className) {
       checkRequiredProperties(className);
-      htmlElement.classList.add(className);
+      htmlElement.forEach(function(el) {
+        el.classList.add(className);
+      });
       return this;
     },
     removeClass: function(className) {
       checkRequiredProperties(className);
-      htmlElement.classList.remove(className);
+      htmlElement.forEach(function(el) {
+        el.classList.remove(className);
+      });
       return this;
     },
     toggleClass: function(className) {
       checkRequiredProperties(className);
-      htmlElement.classList.toggle(className);
+      htmlElement.forEach(function(el) {
+        el.classList.toggle(className);
+      });
       return this;
     },
     hasClass: function(className) {
@@ -142,57 +145,113 @@ function learnQuery(elementsSelector) {
     //DOM Manipulation
     remove: function(element) {
 
-      if (document.contains(element) === false) {
-        return null;
-      }
+      htmlElement.forEach(function(el) {
 
-      element.parentNode.removeChild(element);
+        if (document.contains(el) === false) {
+          return null;
+        }
+
+        if (typeof element === 'undefined') {
+
+          // If element is not provider remove by selector
+          el.parentNode.removeChild(el);
+
+        } else {
+
+          // If object is provided
+
+          var i;
+
+          // If string is provided convert to object
+          if(typeof element === 'string') {
+
+            element = document.querySelectorAll(element);
+
+          }
+
+          for (i = 0; i < element.length; i++) {
+
+            el.removeChild(element[i]);
+          }
+        }
+      });
+
+      return this;
     },
     append: function(element) {
 
-      if (document.contains(htmlElement) === false) {
-        return null;
-      }
+      htmlElement.forEach(function(el) {
+        if (document.contains(el) === false) {
+          return null;
+        }
 
-      htmlElement.appendChild(element);
+        // If object is provided use tag name
+        if(element.tagName){
+          element = element.tagName;
+        }
+
+        el.appendChild(document.createElement(element));
+      });
 
       return this;
+
     },
     prepend: function(element) {
 
-      if (document.contains(htmlElement) === false) {
-        return null;
-      }
+      htmlElement.forEach(function(el) {
+        if (document.contains(el) === false) {
+          return null;
+        }
 
-      htmlElement.insertBefore(element, htmlElement.firstChild);
+        // If object is provided use tag name
+        if(element.tagName){
+          element = element.tagName;
+        }
+
+        el.insertBefore(document.createElement(element), el.firstChild);
+      });
 
       return this;
+
     },
     after: function(element) {
 
-      if (document.contains(htmlElement) === false) {
-        return null;
-      }
+      htmlElement.forEach(function(el) {
+        if (document.contains(el) === false) {
+          return null;
+        }
 
-      htmlElement.parentNode.insertBefore(element, htmlElement.nextSibling);
+        // If object is provided use tag name
+        if(element.tagName){
+          element = element.tagName;
+        }
+
+        el.parentNode.insertBefore(document.createElement(element), el.nextSibling);
+      });
 
       return this;
+
     },
     before: function(element) {
 
-      if (document.contains(htmlElement) === false) {
-        return null;
-      }
+      htmlElement.forEach(function(el) {
 
-      htmlElement.parentNode.insertBefore(element, htmlElement);
+        if (document.contains(el) === false) {
+          return null;
+        }
+
+        // If object is provided use tag name
+        if(element.tagName){
+          element = element.tagName;
+        }
+
+        el.parentNode.insertBefore(document.createElement(element), el);
+      });
 
       return this;
+
     },
     val: function() {
-
-      if (document.contains(htmlElement) === false) {
-        return null;
-      }
 
       var returnValue = '';
       if (typeof htmlElement.value !== 'undefined') {
@@ -246,79 +305,90 @@ function learnQuery(elementsSelector) {
     //Event Listeners
     on: function(event, callback) {
 
-      if (!htmlElement) {
-        throw new Error('Element not provided');
-      }
+      htmlElement.forEach(function(el) {
+        if (!el) {
+          throw new Error('Element not provided');
+        }
 
-      if (!eventList || !eventList[htmlElement] || !eventList[htmlElement][
-          event
-        ]) {
+        if (!eventList ||
+          !eventList[el] ||
+          !eventList[el][event]) {
 
-        htmlElement.addEventListener(event, function(e) {
-          if (typeof eventList[htmlElement][event] !== 'undefined') {
-            eventList[htmlElement][event].forEach(function(call) {
-              call(e);
-            });
-          }
-        });
+          el.addEventListener(event, function(e) {
+            if (typeof eventList[el][event] !== 'undefined') {
+              eventList[el][event].forEach(function(call) {
+                call(e);
+              });
+            }
+          });
 
-      }
+        }
 
-      setEventListenersList(htmlElement, eventList, event, callback);
+        setEventListenersList(el, eventList, event, callback);
+      });
       return this;
     },
     trigger: function(event) {
 
-      var eventObject = new Event(event);
-      htmlElement.dispatchEvent(eventObject);
+      htmlElement.forEach(function(el) {
+        var eventObject = new Event(event);
+        el.dispatchEvent(eventObject);
+      });
       return this;
 
     },
     off: function(event, callback) {
 
-      if (!htmlElement) {
-        throw new Error('Element not provided');
-      }
-
-      if (!callback && !event) {
-
-        eventList[htmlElement] = {};
-
-      } else if (!callback) {
-
-        eventList[htmlElement][event] = [];
-
-      } else {
-
-        var callbackIndex = eventList[htmlElement][event].indexOf(callback);
-
-        if (callbackIndex !== -1) {
-          eventList[htmlElement][event].splice(callbackIndex, 1);
+      htmlElement.forEach(function(el) {
+        if (!el) {
+          throw new Error('Element not provided');
         }
 
-      }
+        if (!callback && !event) {
+
+          eventList[el] = {};
+
+        } else if (!callback) {
+
+          eventList[el][event] = [];
+
+        } else {
+
+          var callbackIndex = eventList[el][event].indexOf(
+            callback);
+
+          if (callbackIndex !== -1) {
+            eventList[el][event].splice(callbackIndex, 1);
+          }
+
+        }
+      });
+
       return this;
     },
     delegate: function(className, event, callback) {
-      learnQuery(elementsSelector).on(event, function(e) {
+      htmlElement.forEach(function(el) {
+        learnQuery(elementsSelector).on(event, function(e) {
 
-        var path = getEventPath(e);
-        var target = getEventTarget(e);
+          var path = getEventPath(e);
+          var target = getEventTarget(e);
 
-        if (className === '') {
-          return false;
-        }
-
-        for (var pathItem of path) {
-          if (pathItem === htmlElement) {
-            break;
+          if (className === '') {
+            return false;
           }
 
-          if (pathItem.classList.contains(className)) {
-            return callback(e);
+          for (var pathItem of path) {
+            if (pathItem === el) {
+              break;
+            }
+
+            if (pathItem.classList.contains(className)) {
+              return callback(e);
+            }
           }
-        }
+        });
       });
+      return this;
     }
 
   };
