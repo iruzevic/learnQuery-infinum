@@ -1,451 +1,381 @@
-var eventList = [];
-
-// Dom selector functions
-var domSelector = function(selectors) {
+var learnQuery = (function() {
   'use strict';
 
-  try {
-    var selectedElements = document.querySelectorAll(selectors);
-    return Array.prototype.slice.call(selectedElements);
-  } catch (e) {
-    throw new Error('Invalid or non existing selector');
-  }
-};
+  var eventList = [];
 
-// CSS manipulation functions
-function setStyleObject(element, propertyObject) {
-  'use strict';
+  // Dom selector functions
+  var domSelector = function(selectors) {
+    'use strict';
+    try {
+      var selectedElements = document.querySelectorAll(selectors);
+      return Array.prototype.slice.call(selectedElements);
+    } catch (e) {
+      throw new Error('Invalid or non existing selector');
+    }
+  };
 
-  var prop;
+  // CSS manipulation functions
+  function setStyleObject(element, propertyObject) {
+    'use strict';
 
-  for (prop in propertyObject) {
-    if (propertyObject.hasOwnProperty(prop)) {
-      element.style[prop] = propertyObject[prop];
+    var prop;
+
+    for (prop in propertyObject) {
+      if (propertyObject.hasOwnProperty(prop)) {
+        element.style[prop] = propertyObject[prop];
+      }
     }
   }
-}
 
-function getStylePropertyValue(element, cssPropertyValue) {
-  'use strict';
+  function getStylePropertyValue(element, cssPropertyValue) {
+    'use strict';
 
-  return window.getComputedStyle(element).getPropertyValue(cssPropertyValue);
-}
-
-function getAllElementStyles(element) {
-  'use strict';
-
-  return element.style.cssText;
-}
-
-// CSS Class Manipulation functions
-function checkRequiredProperties(className) {
-  'use strict';
-
-  if (typeof className === 'undefined') {
-    throw new Error('Class Name not provided');
-  }
-}
-
-//Event Listeners
-var setEventListenersList = function(element, eventList, event, callback) {
-  'use strict';
-
-  if (!eventList[element]) {
-    eventList[element] = [];
-  }
-  if (!eventList[element][event]) {
-    eventList[element][event] = [];
-  }
-  eventList[element][event].push(callback);
-};
-
-var getEventTarget = function(e) {
-  'use strict';
-
-  return e.target || e.srcElement;
-};
-
-var getEventPath = function(e) {
-  'use strict';
-
-  return e.path;
-};
-
-
-
-function learnQuery(elementsSelector) {
-  'use strict';
-
-  if (!elementsSelector) {
-    throw new Error('Selector not provided!');
+    return window.getComputedStyle(element).getPropertyValue(cssPropertyValue);
   }
 
-  var htmlElements = domSelector(elementsSelector);
+  function getAllElementStyles(element) {
+    'use strict';
 
-  return {
+    return element.style.cssText;
+  }
 
-    // CSS manipulation functions
-    cssProp: function(cssProperty, value) {
-      'use strict';
+  // CSS Class Manipulation functions
+  function checkRequiredProperties(className) {
+    'use strict';
+    if (typeof className === 'undefined') {
+      throw new Error('Class Name not provided');
+    }
+  }
 
-      // check if object or property was passed as argument
-      if (typeof cssProperty === 'object') {
+  // DOM Manipulation
+  function createElement(element){
+    var elementType = typeof element;
+
+    switch (elementType) {
+      case 'string':
+        return document.createTextNode(element);
+
+        break;
+      case 'object':
+
+        // If object is provided use tag name
+        if(element.tagName){
+          element = element.tagName;
+        }
+
+        return document.createElement(element);
+        break;
+    }
+  }
+
+  //Event Listeners
+  var setEventListenersList = function(element, eventList, event, callback) {
+    'use strict';
+    if (!eventList[element]) {
+      eventList[element] = [];
+    }
+    if (!eventList[element][event]) {
+      eventList[element][event] = [];
+    }
+    eventList[element][event].push(callback);
+  };
+
+  var getEventPath = function(e) {
+    'use strict';
+    return e.path;
+  };
+
+  return function learnQuery(elementsSelector) {
+    'use strict';
+
+    if (!elementsSelector) {
+      throw new Error('Selector not provided!');
+    }
+
+    var htmlElements = domSelector(elementsSelector);
+
+    return {
+
+      // CSS manipulation functions
+      cssProp: function(cssProperty, value) {
+        'use strict';
+
+        // check if object or property was passed as argument
+        if (typeof cssProperty === 'object') {
+
+          htmlElements.forEach(function(el) {
+            setStyleObject(el, cssProperty);
+          });
+          return this;
+
+        } else {
+
+          var cssPropertyObject = {};
+          cssPropertyObject[cssProperty] = value;
+
+          if (value) {
+
+            htmlElements.forEach(function(el) {
+              setStyleObject(el, cssPropertyObject);
+            });
+            return this;
+
+          } else if (cssProperty) {
+            return getStylePropertyValue(htmlElements, cssProperty);
+          } else {
+            return getAllElementStyles(htmlElements);
+          }
+        }
+      },
+
+      // CSS Class Manipulation functions
+      addClass: function(className) {
+
+        checkRequiredProperties(className);
+        htmlElements.forEach(function(el) {
+          el.classList.add(className);
+        });
+        return this;
+
+      },
+      removeClass: function(className) {
+
+        checkRequiredProperties(className);
+        htmlElements.forEach(function(el) {
+          el.classList.remove(className);
+        });
+        return this;
+
+      },
+      toggleClass: function(className) {
+
+        checkRequiredProperties(className);
+        htmlElements.forEach(function(el) {
+          el.classList.toggle(className);
+        });
+        return this;
+
+      },
+      hasClass: function(className) {
+
+        checkRequiredProperties(className);
+
+        function checkIfElementContainsClass(element) {
+          return element.classList.contains(className);
+        }
+        return htmlElements.some(checkIfElementContainsClass);
+
+      },
+
+      //DOM Manipulation
+      remove: function(element) {
 
         htmlElements.forEach(function(el) {
-          setStyleObject(el, cssProperty);
+
+          if (typeof element === 'undefined') {
+            // If element is not provider remove by selector
+            el.parentNode.removeChild(el);
+
+          } else {
+
+            // If object is provided
+            var i;
+
+            // If string is provided convert to object
+            if(typeof element === 'string') {
+              element = document.querySelectorAll(element);
+            }
+
+            for (i = 0; i < element.length; i++) {
+              el.removeChild(element[i]);
+            }
+          }
+        });
+
+        return this;
+      },
+      append: function(element) {
+
+        htmlElements.forEach(function(el) {
+          var htmlElement = createElement(element);
+          el.appendChild(htmlElement);
         });
 
         return this;
 
-      } else {
+      },
+      prepend: function(element) {
 
-        var cssPropertyObject = {};
-        cssPropertyObject[cssProperty] = value;
+        htmlElements.forEach(function(el) {
+          var htmlElement = createElement(element);
+          el.insertBefore(htmlElement, el.firstChild);
+        });
 
-        if (value) {
+        return this;
 
-          htmlElements.forEach(function(el) {
-            setStyleObject(el, cssPropertyObject);
-          });
+      },
+      after: function(element) {
 
-          return this;
+        htmlElements.forEach(function(el) {
+          var htmlElement = createElement(element);
+          el.parentNode.insertBefore(htmlElement, el.nextSibling);
+        });
 
-        } else if (cssProperty) {
+        return this;
 
-          return getStylePropertyValue(htmlElements, cssProperty);
+      },
+      before: function(element) {
 
-        } else {
+        htmlElements.forEach(function(el) {
+          var htmlElement = createElement(element);
+          el.parentNode.insertBefore(htmlElement, el);
+        });
 
-          return getAllElementStyles(htmlElements);
+        return this;
 
+      },
+      val: function() {
+
+        var i = 0;
+        for (i; i < htmlElements.length; i++) {
+          if (typeof htmlElements[i].value !== 'undefined') {
+            return htmlElements[i].value;
+          }
         }
 
-      }
-    },
+      },
 
-    // CSS Class Manipulation functions
-    addClass: function(className) {
+      //Ajax Request
+      ajaxReq: function(url, options) {
+        'use strict';
 
-      checkRequiredProperties(className);
-      htmlElements.forEach(function(el) {
-        el.classList.add(className);
-      });
-      return this;
-
-    },
-    removeClass: function(className) {
-
-      checkRequiredProperties(className);
-      htmlElements.forEach(function(el) {
-        el.classList.remove(className);
-      });
-      return this;
-
-    },
-    toggleClass: function(className) {
-
-      checkRequiredProperties(className);
-      htmlElements.forEach(function(el) {
-        el.classList.toggle(className);
-      });
-      return this;
-
-    },
-    hasClass: function(className) {
-
-      checkRequiredProperties(className);
-      var i = 0;
-      for (i; i < htmlElements.length; i++) {
-        if(htmlElements[i].classList.contains(className)){
-          return true;
+        var httpRequest = new XMLHttpRequest();
+        if (!httpRequest) {
+          return false;
         }
-      }
 
-      return false;
+        function doAjaxReq() {
 
-    },
+          var ajaxRequest = httpRequest;
+          var ajaxStatus = httpRequest.status;
+          var context = options.context;
 
-    //DOM Manipulation
-    remove: function(element) {
+          if (httpRequest.readyState === 4) {
+            var data = JSON.parse(ajaxRequest.responseText);
+            if (ajaxStatus === 200) {
+              if (typeof options.success !== 'undefined') {
+                options.success.call(context, data, ajaxStatus, ajaxRequest);
+              }
+            } else if (typeof options.failure !== 'undefined') {
+              options.failure.call(context, data, ajaxStatus, ajaxRequest);
+            }
+            if (typeof options.complete !== 'undefined') {
+              options.complete.call(context, data, ajaxRequest);
+            }
+          }
+        }
 
-      htmlElements.forEach(function(el) {
+        var method = options.method;
+        if (options.method !== 'POST') {
+          method = 'GET';
+        }
 
-        if (typeof element === 'undefined') {
+        httpRequest.onreadystatechange = doAjaxReq;
+        httpRequest.open(method, url);
+        httpRequest.send(options.data);
 
-          // If element is not provider remove by selector
-          el.parentNode.removeChild(el);
+        return httpRequest;
+      },
 
-        } else {
+      //Event Listeners
+      on: function(event, callback) {
 
-          // If object is provided
+        htmlElements.forEach(function(el) {
+          if (!el) {
+            throw new Error('Element not provided');
+          }
 
-          var i;
+          if (!eventList ||
+            !eventList[el] ||
+            !eventList[el][event]) {
 
-          // If string is provided convert to object
-          if(typeof element === 'string') {
-
-            element = document.querySelectorAll(element);
+            el.addEventListener(event, function(e) {
+              if (typeof eventList[el][event] !== 'undefined') {
+                eventList[el][event].forEach(function(call) {
+                  call(e);
+                });
+              }
+            });
 
           }
 
-          for (i = 0; i < element.length; i++) {
-
-            el.removeChild(element[i]);
-          }
-        }
-      });
-
-      return this;
-    },
-    append: function(element) {
-
-      var elementType = typeof element;
-
-      htmlElements.forEach(function(el) {
-
-        switch (elementType) {
-          case 'string':
-            el.appendChild(document.createTextNode(element));
-
-            break;
-          case 'object':
-
-            // If object is provided use tag name
-            if(element.tagName){
-              element = element.tagName;
-            }
-
-            el.appendChild(document.createElement(element));
-            break;
-        }
-
-      });
-
-      return this;
-
-    },
-    prepend: function(element) {
-
-      var elementType = typeof element;
-
-      htmlElements.forEach(function(el) {
-
-        switch (elementType) {
-          case 'string':
-            el.insertBefore(document.createTextNode(element), el.firstChild);
-
-            break;
-          case 'object':
-
-            // If object is provided use tag name
-            if(element.tagName){
-              element = element.tagName;
-            }
-
-            el.insertBefore(document.createElement(element), el.firstChild);
-            break;
-        }
-
-      });
-
-      return this;
-
-    },
-    after: function(element) {
-
-      var elementType = typeof element;
-
-      htmlElements.forEach(function(el) {
-
-        switch (elementType) {
-          case 'string':
-            el.parentNode.insertBefore(document.createTextNode(element), el.nextSibling);
-
-            break;
-          case 'object':
-
-            // If object is provided use tag name
-            if(element.tagName){
-              element = element.tagName;
-            }
-
-            el.parentNode.insertBefore(document.createElement(element), el.nextSibling);
-            break;
-        }
-
-      });
-
-      return this;
-
-    },
-    before: function(element) {
-
-      var elementType = typeof element;
-
-      htmlElements.forEach(function(el) {
-
-        switch (elementType) {
-          case 'string':
-            el.parentNode.insertBefore(document.createTextNode(element), el);
-
-            break;
-          case 'object':
-
-            // If object is provided use tag name
-            if(element.tagName){
-              element = element.tagName;
-            }
-
-            el.parentNode.insertBefore(document.createElement(element), el);
-            break;
-        }
-
-      });
-
-      return this;
-
-    },
-    val: function() {
-
-      var i = 0;
-      for (i; i < htmlElements.length; i++) {
-        if (typeof htmlElements[i].value !== 'undefined') {
-          return htmlElements[i].value;
-        }
-      }
-
-    },
-
-    //Ajax Request
-    ajaxReq: function(url, options) {
-      'use strict';
-
-      var httpRequest = new XMLHttpRequest();
-      if (!httpRequest) {
-        return false;
-      }
-
-      function doAjaxReq() {
-
-        var ajaxRequest = httpRequest;
-        var ajaxStatus = httpRequest.status;
-        var context = options.context;
-
-        if (httpRequest.readyState === 4) {
-          var data = JSON.parse(ajaxRequest.responseText);
-          if (ajaxStatus === 200) {
-            if (typeof options.success !== 'undefined') {
-              options.success.call(context, data, ajaxStatus, ajaxRequest);
-            }
-          } else if (typeof options.failure !== 'undefined') {
-            options.failure.call(context, data, ajaxStatus, ajaxRequest);
-          }
-          if (typeof options.complete !== 'undefined') {
-            options.complete.call(context, data, ajaxRequest);
-          }
-        }
-      }
-
-      var method = options.method;
-      if (options.method !== 'POST') {
-        method = 'GET';
-      }
-
-      httpRequest.onreadystatechange = doAjaxReq;
-      httpRequest.open(method, url);
-      httpRequest.send(options.data);
-
-      return httpRequest;
-    },
-
-    //Event Listeners
-    on: function(event, callback) {
-
-      htmlElements.forEach(function(el) {
-        if (!el) {
-          throw new Error('Element not provided');
-        }
-
-        if (!eventList ||
-          !eventList[el] ||
-          !eventList[el][event]) {
-
-          el.addEventListener(event, function(e) {
-            if (typeof eventList[el][event] !== 'undefined') {
-              eventList[el][event].forEach(function(call) {
-                call(e);
-              });
-            }
-          });
-
-        }
-
-        setEventListenersList(el, eventList, event, callback);
-      });
-      return this;
-    },
-    trigger: function(event) {
-
-      htmlElements.forEach(function(el) {
-        var eventObject = new Event(event);
-        el.dispatchEvent(eventObject);
-      });
-      return this;
-
-    },
-    off: function(event, callback) {
-
-      htmlElements.forEach(function(el) {
-        if (!el) {
-          throw new Error('Element not provided');
-        }
-
-        if (!callback && !event) {
-
-          eventList[el] = {};
-
-        } else if (!callback) {
-
-          eventList[el][event] = [];
-
-        } else {
-
-          var callbackIndex = eventList[el][event].indexOf(
-            callback);
-
-          if (callbackIndex !== -1) {
-            eventList[el][event].splice(callbackIndex, 1);
+          setEventListenersList(el, eventList, event, callback);
+        });
+        return this;
+      },
+      trigger: function(event) {
+
+        htmlElements.forEach(function(el) {
+          var eventObject = new Event(event);
+          el.dispatchEvent(eventObject);
+        });
+        return this;
+
+      },
+      off: function(event, callback) {
+
+        htmlElements.forEach(function(el) {
+          if (!el) {
+            throw new Error('Element not provided');
           }
 
-        }
-      });
+          if (!callback && !event) {
 
-      return this;
-    },
-    delegate: function(className, event, callback) {
-      htmlElements.forEach(function(el) {
-        learnQuery(elementsSelector).on(event, function(e) {
+            eventList[el] = {};
 
-          var path = getEventPath(e);
+          } else if (!callback) {
 
-          if (className === '') {
-            return false;
-          }
+            eventList[el][event] = [];
 
-          for (var pathItem of path) {
-            if (pathItem === el) {
-              break;
+          } else {
+
+            var callbackIndex = eventList[el][event].indexOf(
+              callback);
+
+            if (callbackIndex !== -1) {
+              eventList[el][event].splice(callbackIndex, 1);
             }
 
-            if (pathItem.classList.contains(className)) {
-              return callback(e);
-            }
           }
         });
-      });
-      return this;
-    }
 
-  };
+        return this;
+      },
+      delegate: function(className, event, callback) {
+        htmlElements.forEach(function(el) {
+          learnQuery(elementsSelector).on(event, function(e) {
 
-}
+            var path = getEventPath(e);
+
+            if (className === '') {
+              return false;
+            }
+
+            for (var pathItem of path) {
+              if (pathItem === el) {
+                break;
+              }
+
+              if (pathItem.classList.contains(className)) {
+                return callback(e);
+              }
+            }
+          });
+        });
+        return this;
+      }
+
+    };
+  }
+})();
+
