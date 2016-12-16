@@ -5,7 +5,6 @@ var learnQuery = (function() {
 
   // Dom selector functions
   var domSelector = function(selectors) {
-    'use strict';
     try {
       var selectedElements = document.querySelectorAll(selectors);
       return Array.prototype.slice.call(selectedElements);
@@ -16,8 +15,6 @@ var learnQuery = (function() {
 
   // CSS manipulation functions
   function setStyleObject(element, propertyObject) {
-    'use strict';
-
     var prop;
 
     for (prop in propertyObject) {
@@ -28,20 +25,15 @@ var learnQuery = (function() {
   }
 
   function getStylePropertyValue(element, cssPropertyValue) {
-    'use strict';
-
     return window.getComputedStyle(element).getPropertyValue(cssPropertyValue);
   }
 
   function getAllElementStyles(element) {
-    'use strict';
-
     return element.style.cssText;
   }
 
   // CSS Class Manipulation functions
   function checkRequiredProperties(className) {
-    'use strict';
     if (typeof className === 'undefined') {
       throw new Error('Class Name not provided');
     }
@@ -69,8 +61,7 @@ var learnQuery = (function() {
   }
 
   //Event Listeners
-  var setEventListenersList = function(element, eventList, event, callback) {
-    'use strict';
+  var setEventListenersList = function(element, event, callback) {
     if (!eventList[element]) {
       eventList[element] = [];
     }
@@ -81,12 +72,10 @@ var learnQuery = (function() {
   };
 
   var getEventPath = function(e) {
-    'use strict';
     return e.path;
   };
 
   return function learnQuery(elementsSelector) {
-    'use strict';
 
     if (!elementsSelector) {
       throw new Error('Selector not provided!');
@@ -98,7 +87,6 @@ var learnQuery = (function() {
 
       // CSS manipulation functions
       cssProp: function(cssProperty, value) {
-        'use strict';
 
         // check if object or property was passed as argument
         if (typeof cssProperty === 'object') {
@@ -247,7 +235,6 @@ var learnQuery = (function() {
 
       //Ajax Request
       ajaxReq: function(url, options) {
-        'use strict';
 
         var httpRequest = new XMLHttpRequest();
         if (!httpRequest) {
@@ -309,7 +296,7 @@ var learnQuery = (function() {
 
           }
 
-          setEventListenersList(el, eventList, event, callback);
+          setEventListenersList(el, event, callback);
         });
         return this;
       },
