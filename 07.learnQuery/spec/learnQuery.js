@@ -7,7 +7,7 @@ describe('LearnQuery', function() {
 
   beforeEach(function() {
     affix(
-      '.learn-query-testing #toddler .hidden.toy+h1[class="title"]+span[class="subtitle"]+input[name="toyName"][value="cuddle bunny"]+input[class="creature"][value="unicorn"]+.hidden+.infinum[value="awesome cool"]'
+      '.learn-query-testing #toddler .hidden.toy+h1[class="title"]+span[class="subtitle"]+span[class="subtitle"]+input[name="toyName"][value="cuddle bunny"]+input[class="creature"][value="unicorn"]+.hidden+.infinum[value="awesome cool"]+select>(option[value="awesome"]+option[value="cool"])+select>(option[value="awesome1"]+option[value="cool1"])'
     );
 
     methods = {
@@ -25,6 +25,8 @@ describe('LearnQuery', function() {
     selector = '#toddler';
     $selectedElement = $(selector);
     selectedElement = $selectedElement.get(0);
+
+    learnQuery(selector).off();
 
   });
 
@@ -74,6 +76,16 @@ describe('LearnQuery', function() {
 
   });
 
+  it('should allow eventListener to work in different scopes', function() {
+
+    learnQuery(selector).on('click', methods.showLove);
+    learnQuery(selector).off('click', methods.showLove);
+    learnQuery(selector).trigger('click');
+
+    expect(methods.showLove.calls.count()).toEqual(0);
+
+  });
+
   it('should allow multiple methods chaining', function() {
 
     var selector = '.hidden';
@@ -81,17 +93,65 @@ describe('LearnQuery', function() {
     var $selectedElement = $(selector);
     var expectedSelectedElement = $.makeArray($selectedElement);
 
+    var property1 = 'fontSize';
+    var value1 = '50px';
 
-    learnQuery(selector)
+    var hasClass = learnQuery(selector)
       .append(newElement)
       .addClass('newSuperClass')
       .on('click', methods.showLove)
-      .trigger('click');
+      .trigger('click')
+      .cssProp(property1, value1)
+      .hasClass('newSuperClass');
+
 
     expect(expectedSelectedElement[0].lastChild).toEqual(newElement);
+    expect(expectedSelectedElement[0].style.fontSize).toEqual(value1);
+
+    expect(expectedSelectedElement[1].style.fontSize).toEqual(value1);
     expect(expectedSelectedElement[1].lastChild).toEqual(newElement);
     expect($selectedElement.hasClass('newSuperClass')).toBe(true);
     expect(methods.showLove).toHaveBeenCalled();
+    expect(hasClass).toBe(true);
 
   });
+
+  it('should set a CSS attribute of an HTML element', function() {
+
+    var selector = '.hidden';
+    var $selectedElement = $(selector);
+    var expectedSelectedElement = $.makeArray($selectedElement);
+
+    var property1 = 'fontSize';
+    var value1 = '50px';
+
+    var property2 = 'fontWeight';
+    var value2 = 'bold';
+
+    var propertyObj = {
+      'color': 'red',
+      'position': 'relative'
+    };
+
+    learnQuery(selector).cssProp(property1, value1).cssProp(property2, value2).cssProp(propertyObj);
+
+    expect(expectedSelectedElement[0].style.fontSize).toEqual(value1);
+    expect(expectedSelectedElement[0].style.fontWeight).toEqual(value2);
+    expect(expectedSelectedElement[0].style.color).toEqual(propertyObj.color);
+    expect(expectedSelectedElement[0].style.position).toEqual(propertyObj.position);
+
+    expect(expectedSelectedElement[1].style.fontSize).toEqual(value1);
+    expect(expectedSelectedElement[1].style.fontWeight).toEqual(value2);
+    expect(expectedSelectedElement[1].style.color).toEqual(propertyObj.color);
+    expect(expectedSelectedElement[1].style.position).toEqual(propertyObj.position);
+  });
+
+  it('select value if provided with multiple options should return only first like jQuery ', function () {
+
+    var selector = '#toddler select';
+
+    expect(learnQuery(selector).val()).toEqual('awesome');
+
+  });
+
 });

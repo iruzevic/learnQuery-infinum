@@ -1,9 +1,12 @@
+var eventList = [];
+
 // Dom selector functions
 var domSelector = function(selectors) {
   'use strict';
+
   try {
-    var selectedElement = document.querySelectorAll(selectors);
-    return Array.prototype.slice.call(selectedElement);
+    var selectedElements = document.querySelectorAll(selectors);
+    return Array.prototype.slice.call(selectedElements);
   } catch (e) {
     throw new Error('Invalid or non existing selector');
   }
@@ -37,6 +40,7 @@ function getAllElementStyles(element) {
 // CSS Class Manipulation functions
 function checkRequiredProperties(className) {
   'use strict';
+
   if (typeof className === 'undefined') {
     throw new Error('Class Name not provided');
   }
@@ -45,6 +49,7 @@ function checkRequiredProperties(className) {
 //Event Listeners
 var setEventListenersList = function(element, eventList, event, callback) {
   'use strict';
+
   if (!eventList[element]) {
     eventList[element] = [];
   }
@@ -56,13 +61,16 @@ var setEventListenersList = function(element, eventList, event, callback) {
 
 var getEventTarget = function(e) {
   'use strict';
+
   return e.target || e.srcElement;
 };
 
 var getEventPath = function(e) {
   'use strict';
+
   return e.path;
 };
+
 
 
 function learnQuery(elementsSelector) {
@@ -72,24 +80,21 @@ function learnQuery(elementsSelector) {
     throw new Error('Selector not provided!');
   }
 
-  var eventList = [];
-
-  var htmlElement = domSelector(elementsSelector);
+  var htmlElements = domSelector(elementsSelector);
 
   return {
 
     // CSS manipulation functions
-    cssProp: function(htmlElement, cssProperty, value) {
+    cssProp: function(cssProperty, value) {
       'use strict';
-
-      if (!htmlElement) {
-        throw new Error('HTML Element not provided');
-      }
 
       // check if object or property was passed as argument
       if (typeof cssProperty === 'object') {
 
-        setStyleObject(htmlElement, cssProperty);
+        htmlElements.forEach(function(el) {
+          setStyleObject(el, cssProperty);
+        });
+
         return this;
 
       } else {
@@ -99,16 +104,19 @@ function learnQuery(elementsSelector) {
 
         if (value) {
 
-          setStyleObject(htmlElement, cssPropertyObject);
+          htmlElements.forEach(function(el) {
+            setStyleObject(el, cssPropertyObject);
+          });
+
           return this;
 
         } else if (cssProperty) {
 
-          return getStylePropertyValue(htmlElement, cssProperty);
+          return getStylePropertyValue(htmlElements, cssProperty);
 
         } else {
 
-          return getAllElementStyles(htmlElement);
+          return getAllElementStyles(htmlElements);
 
         }
 
@@ -117,39 +125,50 @@ function learnQuery(elementsSelector) {
 
     // CSS Class Manipulation functions
     addClass: function(className) {
+
       checkRequiredProperties(className);
-      htmlElement.forEach(function(el) {
+      htmlElements.forEach(function(el) {
         el.classList.add(className);
       });
       return this;
+
     },
     removeClass: function(className) {
+
       checkRequiredProperties(className);
-      htmlElement.forEach(function(el) {
+      htmlElements.forEach(function(el) {
         el.classList.remove(className);
       });
       return this;
+
     },
     toggleClass: function(className) {
+
       checkRequiredProperties(className);
-      htmlElement.forEach(function(el) {
+      htmlElements.forEach(function(el) {
         el.classList.toggle(className);
       });
       return this;
+
     },
     hasClass: function(className) {
+
       checkRequiredProperties(className);
-      return htmlElement.classList.contains(className);
+      var i = 0;
+      for (i; i < htmlElements.length; i++) {
+        if(htmlElements[i].classList.contains(className)){
+          return true;
+        }
+      }
+
+      return false;
+
     },
 
     //DOM Manipulation
     remove: function(element) {
 
-      htmlElement.forEach(function(el) {
-
-        if (document.contains(el) === false) {
-          return null;
-        }
+      htmlElements.forEach(function(el) {
 
         if (typeof element === 'undefined') {
 
@@ -180,17 +199,26 @@ function learnQuery(elementsSelector) {
     },
     append: function(element) {
 
-      htmlElement.forEach(function(el) {
-        if (document.contains(el) === false) {
-          return null;
+      var elementType = typeof element;
+
+      htmlElements.forEach(function(el) {
+
+        switch (elementType) {
+          case 'string':
+            el.appendChild(document.createTextNode(element));
+
+            break;
+          case 'object':
+
+            // If object is provided use tag name
+            if(element.tagName){
+              element = element.tagName;
+            }
+
+            el.appendChild(document.createElement(element));
+            break;
         }
 
-        // If object is provided use tag name
-        if(element.tagName){
-          element = element.tagName;
-        }
-
-        el.appendChild(document.createElement(element));
       });
 
       return this;
@@ -198,17 +226,26 @@ function learnQuery(elementsSelector) {
     },
     prepend: function(element) {
 
-      htmlElement.forEach(function(el) {
-        if (document.contains(el) === false) {
-          return null;
+      var elementType = typeof element;
+
+      htmlElements.forEach(function(el) {
+
+        switch (elementType) {
+          case 'string':
+            el.insertBefore(document.createTextNode(element), el.firstChild);
+
+            break;
+          case 'object':
+
+            // If object is provided use tag name
+            if(element.tagName){
+              element = element.tagName;
+            }
+
+            el.insertBefore(document.createElement(element), el.firstChild);
+            break;
         }
 
-        // If object is provided use tag name
-        if(element.tagName){
-          element = element.tagName;
-        }
-
-        el.insertBefore(document.createElement(element), el.firstChild);
       });
 
       return this;
@@ -216,17 +253,26 @@ function learnQuery(elementsSelector) {
     },
     after: function(element) {
 
-      htmlElement.forEach(function(el) {
-        if (document.contains(el) === false) {
-          return null;
+      var elementType = typeof element;
+
+      htmlElements.forEach(function(el) {
+
+        switch (elementType) {
+          case 'string':
+            el.parentNode.insertBefore(document.createTextNode(element), el.nextSibling);
+
+            break;
+          case 'object':
+
+            // If object is provided use tag name
+            if(element.tagName){
+              element = element.tagName;
+            }
+
+            el.parentNode.insertBefore(document.createElement(element), el.nextSibling);
+            break;
         }
 
-        // If object is provided use tag name
-        if(element.tagName){
-          element = element.tagName;
-        }
-
-        el.parentNode.insertBefore(document.createElement(element), el.nextSibling);
       });
 
       return this;
@@ -234,18 +280,26 @@ function learnQuery(elementsSelector) {
     },
     before: function(element) {
 
-      htmlElement.forEach(function(el) {
+      var elementType = typeof element;
 
-        if (document.contains(el) === false) {
-          return null;
+      htmlElements.forEach(function(el) {
+
+        switch (elementType) {
+          case 'string':
+            el.parentNode.insertBefore(document.createTextNode(element), el);
+
+            break;
+          case 'object':
+
+            // If object is provided use tag name
+            if(element.tagName){
+              element = element.tagName;
+            }
+
+            el.parentNode.insertBefore(document.createElement(element), el);
+            break;
         }
 
-        // If object is provided use tag name
-        if(element.tagName){
-          element = element.tagName;
-        }
-
-        el.parentNode.insertBefore(document.createElement(element), el);
       });
 
       return this;
@@ -253,11 +307,13 @@ function learnQuery(elementsSelector) {
     },
     val: function() {
 
-      var returnValue = '';
-      if (typeof htmlElement.value !== 'undefined') {
-        returnValue = htmlElement.value;
+      var i = 0;
+      for (i; i < htmlElements.length; i++) {
+        if (typeof htmlElements[i].value !== 'undefined') {
+          return htmlElements[i].value;
+        }
       }
-      return returnValue;
+
     },
 
     //Ajax Request
@@ -305,7 +361,7 @@ function learnQuery(elementsSelector) {
     //Event Listeners
     on: function(event, callback) {
 
-      htmlElement.forEach(function(el) {
+      htmlElements.forEach(function(el) {
         if (!el) {
           throw new Error('Element not provided');
         }
@@ -330,7 +386,7 @@ function learnQuery(elementsSelector) {
     },
     trigger: function(event) {
 
-      htmlElement.forEach(function(el) {
+      htmlElements.forEach(function(el) {
         var eventObject = new Event(event);
         el.dispatchEvent(eventObject);
       });
@@ -339,7 +395,7 @@ function learnQuery(elementsSelector) {
     },
     off: function(event, callback) {
 
-      htmlElement.forEach(function(el) {
+      htmlElements.forEach(function(el) {
         if (!el) {
           throw new Error('Element not provided');
         }
@@ -367,11 +423,10 @@ function learnQuery(elementsSelector) {
       return this;
     },
     delegate: function(className, event, callback) {
-      htmlElement.forEach(function(el) {
+      htmlElements.forEach(function(el) {
         learnQuery(elementsSelector).on(event, function(e) {
 
           var path = getEventPath(e);
-          var target = getEventTarget(e);
 
           if (className === '') {
             return false;
